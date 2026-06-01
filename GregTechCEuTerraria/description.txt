@@ -1,0 +1,28 @@
+A full port of GregTech Modern (GTCEu).
+We want to greg everywhere
+
+Adds:
+- ~8700 new items
+- ~32000 recipes
+- 70 singleblock machines, 15 voltage tiers
+- 55 multiblocks
+- Wire, item, fluid, laser, optical and long-distance pipe networks
+- Cover system
+- Gregtech ore generation and compatibility with terraria ores
+- Various recipe changes for proper integration into terraria progression
+- 4 custom GT-themed bosses, custom drop tables for vanilla bosses
+- JEI-like recipe browser
+- Questbook (ported from GTCEu Community Edition, not polished yet)
+- Full multiplayer compatibility
+- Optional integration: QuestBooks (not yet released)
+
+Discord: https://discord.gg/sqs4G7u6eX
+There's still bugs, please report if you found any
+
+Credits: GregTech Modern team
+Source: https://github.com/GregTechCEu/GregTech-Modern
+License: LGPL-3.0-or-later
+
+Credits: GregTech Modern Community Pack (questbook content)
+Source: https://github.com/GregTechCEu/GregTech-Modern-Community-Pack
+License: LGPL-2.1

@@ -1,0 +1,39 @@
+# Reference upstream - do not commit
+GregTech-Modern-1.20.1/
+
+# Build output
+bin/
+obj/
+*.tmod
+*.user
+*.suo
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Weak-dep DLLs - cloners drop QuestBooks.dll here themselves
+GregTechCEuTerraria/lib/
+
+# IDE
+.vs/
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs / temp
+*.log
+*.tmp
+/tools/gtceu-extract/out/
+
+# Claude
+CLAUDE.md
+.claude/
+
+# Verbatim gregtech assets - produced by tools/scripts/sync-upstream-textures.py and sync-upstream-sounds.py
+GregTechCEuTerraria/Content/Textures/
+GregTechCEuTerraria/Content/Sounds/

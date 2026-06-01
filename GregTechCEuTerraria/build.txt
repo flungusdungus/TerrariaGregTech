@@ -1,0 +1,13 @@
+author = caxapexac
+displayName = GregTechCEu (Terraria)
+homepage = https://github.com/caxapexac/TerrariaGregTech
+version = 0.0.1
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, *.md, obj\*, bin\*, .vs\*, lib\*
+# Soft dep - QB is optional at runtime. tML still requires QuestBooks.tmod
+# present at BUILD time (see tML ModCompile.cs:373). Players without QB
+# can still load us; code that touches QB types must be guarded with
+# ModLoader.HasMod("QuestBooks").
+weakReferences = QuestBooks@0.1

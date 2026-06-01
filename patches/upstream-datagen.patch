@@ -1,0 +1,1356 @@
+# Patches against GregTech-Modern branch 1.20.1 @ 934cca815
+# Generated 2026-06-01T00:05:03Z
+# Apply with: git apply patches/upstream-datagen.patch  (from inside GregTech-Modern-1.20.1/)
+# Or:         cd GregTech-Modern-1.20.1 && patch -p1 < ../patches/upstream-datagen.patch
+
+--- a/src/main/java/com/gregtechceu/gtceu/data/DataGenerators.java	2026-06-01 04:00:01.673817500 +0400
++++ b/src/main/java/com/gregtechceu/gtceu/data/DataGenerators.java	2026-05-26 09:11:35.941854100 +0400
+@@ -1,53 +1,825 @@
+-package com.gregtechceu.gtceu.data;
+-
+-import com.gregtechceu.gtceu.GTCEu;
+-import com.gregtechceu.gtceu.api.registry.registrate.SoundEntryBuilder;
+-import com.gregtechceu.gtceu.common.data.GTBiomeModifiers;
+-import com.gregtechceu.gtceu.common.data.GTConfiguredFeatures;
+-import com.gregtechceu.gtceu.common.data.GTDamageTypes;
+-import com.gregtechceu.gtceu.common.data.GTPlacements;
+-import com.gregtechceu.gtceu.common.data.GTWorldgen;
+-import com.gregtechceu.gtceu.data.tags.BiomeTagsLoader;
+-import com.gregtechceu.gtceu.data.tags.DamageTagsLoader;
+-
+-import net.minecraft.core.RegistrySetBuilder;
+-import net.minecraft.core.registries.Registries;
+-import net.minecraft.data.DataGenerator;
+-import net.minecraft.data.PackOutput;
+-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
+-import net.minecraftforge.common.data.ExistingFileHelper;
+-import net.minecraftforge.data.event.GatherDataEvent;
+-import net.minecraftforge.eventbus.api.SubscribeEvent;
+-import net.minecraftforge.fml.common.Mod;
+-import net.minecraftforge.registries.ForgeRegistries;
+-
+-import java.util.Set;
+-
+-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+-public class DataGenerators {
+-
+-    @SubscribeEvent
+-    public static void gatherData(GatherDataEvent event) {
+-        DataGenerator generator = event.getGenerator();
+-        PackOutput packOutput = generator.getPackOutput();
+-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+-        var registries = event.getLookupProvider();
+-        if (event.includeClient()) {
+-            generator.addProvider(true, new SoundEntryBuilder.SoundEntryProvider(packOutput, GTCEu.MOD_ID));
+-        }
+-        if (event.includeServer()) {
+-            var set = Set.of(GTCEu.MOD_ID);
+-            generator.addProvider(true, new BiomeTagsLoader(packOutput, registries, existingFileHelper));
+-            DatapackBuiltinEntriesProvider provider = generator.addProvider(true, new DatapackBuiltinEntriesProvider(
+-                    packOutput, registries, new RegistrySetBuilder()
+-                            .add(Registries.DAMAGE_TYPE, GTDamageTypes::bootstrap)
+-                            .add(Registries.CONFIGURED_FEATURE, GTConfiguredFeatures::bootstrap)
+-                            .add(Registries.PLACED_FEATURE, GTPlacements::bootstrap)
+-                            .add(Registries.DENSITY_FUNCTION, GTWorldgen::bootstrapDensityFunctions)
+-                            .add(ForgeRegistries.Keys.BIOME_MODIFIERS, GTBiomeModifiers::bootstrap),
+-                    set));
+-            generator.addProvider(true,
+-                    new DamageTagsLoader(packOutput, provider.getRegistryProvider(), existingFileHelper));
+-        }
+-    }
+-}
++package com.gregtechceu.gtceu.data;
++
++import com.gregtechceu.gtceu.GTCEu;
++import com.gregtechceu.gtceu.api.registry.registrate.SoundEntryBuilder;
++import com.gregtechceu.gtceu.common.data.GTBiomeModifiers;
++import com.gregtechceu.gtceu.common.data.GTConfiguredFeatures;
++import com.gregtechceu.gtceu.common.data.GTDamageTypes;
++import com.gregtechceu.gtceu.common.data.GTPlacements;
++import com.gregtechceu.gtceu.common.data.GTRecipes;
++import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
++import com.gregtechceu.gtceu.common.data.GTWorldgen;
++import com.gregtechceu.gtceu.data.tags.BiomeTagsLoader;
++import com.gregtechceu.gtceu.data.tags.DamageTagsLoader;
++
++import net.minecraft.core.RegistrySetBuilder;
++import net.minecraft.core.registries.Registries;
++import net.minecraft.data.DataGenerator;
++import net.minecraft.data.PackOutput;
++import net.minecraft.data.recipes.FinishedRecipe;
++import net.minecraft.data.recipes.RecipeProvider;
++import java.util.function.Consumer;
++import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
++import net.minecraftforge.common.data.ExistingFileHelper;
++import net.minecraftforge.data.event.GatherDataEvent;
++import net.minecraftforge.eventbus.api.SubscribeEvent;
++import net.minecraftforge.fml.common.Mod;
++import net.minecraftforge.registries.ForgeRegistries;
++
++import java.util.Set;
++
++@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
++public class DataGenerators {
++
++    @SubscribeEvent
++    public static void gatherData(GatherDataEvent event) {
++        DataGenerator generator = event.getGenerator();
++        PackOutput packOutput = generator.getPackOutput();
++        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
++        var registries = event.getLookupProvider();
++        if (event.includeClient()) {
++            generator.addProvider(true, new SoundEntryBuilder.SoundEntryProvider(packOutput, GTCEu.MOD_ID));
++        }
++        if (event.includeServer()) {
++            var set = Set.of(GTCEu.MOD_ID);
++            generator.addProvider(true, new BiomeTagsLoader(packOutput, registries, existingFileHelper));
++            DatapackBuiltinEntriesProvider provider = generator.addProvider(true, new DatapackBuiltinEntriesProvider(
++                    packOutput, registries, new RegistrySetBuilder()
++                            .add(Registries.DAMAGE_TYPE, GTDamageTypes::bootstrap)
++                            .add(Registries.CONFIGURED_FEATURE, GTConfiguredFeatures::bootstrap)
++                            .add(Registries.PLACED_FEATURE, GTPlacements::bootstrap)
++                            .add(Registries.DENSITY_FUNCTION, GTWorldgen::bootstrapDensityFunctions)
++                            .add(ForgeRegistries.Keys.BIOME_MODIFIERS, GTBiomeModifiers::bootstrap),
++                    set));
++            generator.addProvider(true,
++                    new DamageTagsLoader(packOutput, provider.getRegistryProvider(), existingFileHelper));
++
++            // [GregTechCEuTerraria port] Force-emit every runtime-registered recipe
++            // to disk so our extractor (tools/gtceu-extract recipes) can consume them.
++            // Upstream normally registers these only at server resource-reload time.
++            generator.addProvider(true, new RecipeProvider(packOutput) {
++                @Override
++                protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
++                    var seen = new java.util.HashSet<net.minecraft.resources.ResourceLocation>();
++                    Consumer<FinishedRecipe> dedup = r -> {
++                        if (seen.add(r.getId())) consumer.accept(r);
++                    };
++                    // Mirror the production resource-reload order in CommonProxy:
++                    // GTCraftingComponents.init -> recipeRemoval -> recipeAddition.
++                    GTCraftingComponents.init();
++                    GTRecipes.recipeRemoval();
++                    GTRecipes.recipeAddition(dedup);
++                }
++            });
++
++            // [GregTechCEuTerraria port] Dump the whole item registry — id,
++            // concrete Java class, and intrinsic data — to registry/items.json.
++            // This is the authoritative catalog our C# side binds against, so
++            // we never have to regex-parse GTItems.java source for "what items
++            // exist". Behavior still gets hand-ported per class; this only
++            // covers the data/catalog layer.
++            generator.addProvider(true, new net.minecraft.data.DataProvider() {
++                @Override
++                public java.util.concurrent.CompletableFuture<?> run(net.minecraft.data.CachedOutput cache) {
++                    // Keyed + sorted by id so the dump is deterministic across
++                    // runData runs (registry iteration order is not stable).
++                    java.util.TreeMap<String, com.google.gson.JsonObject> byId = new java.util.TreeMap<>();
++                    for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
++                        net.minecraft.resources.ResourceLocation id =
++                                net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
++                        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
++                        o.addProperty("id", id.toString());
++                        o.addProperty("class", item.getClass().getName());
++                        o.addProperty("maxStack", item.getMaxStackSize());
++                        o.addProperty("maxDamage", item.getMaxDamage());
++                        o.addProperty("fireResistant", item.isFireResistant());
++                        o.addProperty("rarity",
++                                new net.minecraft.world.item.ItemStack(item).getRarity().name());
++
++                        // [GregTechCEuTerraria port] Structured construction
++                        // params for the GT item classes the C# registry
++                        // pipeline materialises — material id + the canonical
++                        // upstream TagPrefix name — so the mod side binds items
++                        // to C# classes by Class+params, never reverse-parsing
++                        // the registry id.
++                        if (item instanceof com.gregtechceu.gtceu.api.item.TagPrefixItem tpi) {
++                            o.addProperty("material", tpi.material.getName());
++                            o.addProperty("prefix", tpi.tagPrefix.name);
++                            emitRenderLayers(o, tpi.material, tpi.tagPrefix, packOutput, "item");
++                        } else if (item instanceof com.gregtechceu.gtceu.api.item.MaterialBlockItem mbi) {
++                            com.gregtechceu.gtceu.api.block.MaterialBlock mb = mbi.getBlock();
++                            o.addProperty("material", mb.material.getName());
++                            o.addProperty("prefix", mb.tagPrefix.name);
++                            // Block items render from `block/material_sets/…` textures.
++                            emitRenderLayers(o, mb.material, mb.tagPrefix, packOutput, "block");
++                        } else if (item instanceof com.gregtechceu.gtceu.api.item.MaterialPipeBlockItem mpi) {
++                            com.gregtechceu.gtceu.api.block.MaterialPipeBlock mpb = mpi.getBlock();
++                            o.addProperty("material", mpb.material.getName());
++                            if (mpb.pipeType instanceof com.gregtechceu.gtceu.api.pipenet.IMaterialPipeType<?> mpt) {
++                                o.addProperty("prefix", mpt.getTagPrefix().name);
++                            }
++                        } else if (item instanceof com.gregtechceu.gtceu.api.item.ComponentItem ci) {
++                            // ComponentItem batteries / electric tools carry an
++                            // ElectricStats component — dump its tier+capacity so
++                            // the C# BatteryItemLoader materialises batteries
++                            // without hand-typed stats. Cover items carry a
++                            // CoverPlaceBehavior — dump which CoverDefinition the
++                            // item places so the C# CoverItemLoader binds item →
++                            // cover without a hand map. components is protected;
++                            // reflection keeps the patch to this one file.
++                            try {
++                                java.lang.reflect.Field f = com.gregtechceu.gtceu.api.item.ComponentItem.class
++                                        .getDeclaredField("components");
++                                f.setAccessible(true);
++                                for (Object comp : (java.util.List<?>) f.get(ci)) {
++                                    if (comp instanceof com.gregtechceu.gtceu.api.item.component.ElectricStats es) {
++                                        o.addProperty("electricCapacity", es.maxCharge);
++                                        o.addProperty("electricTier", es.tier);
++                                        o.addProperty("electricChargeable", es.chargeable);
++                                        o.addProperty("electricDischargeable", es.dischargeable);
++                                    } else if (comp instanceof
++                                            com.gregtechceu.gtceu.common.item.behavior.CoverPlaceBehavior cpb) {
++                                        o.addProperty("cover", cpb.coverDefinition().getId().toString());
++                                    }
++                                }
++                            } catch (ReflectiveOperationException ignored) {}
++                        }
++
++                        byId.put(id.toString(), o);
++                    }
++
++                    // [GregTechCEuTerraria port] Synthetic material items —
++                    // (material × prefix) forms GregTech unifies onto a vanilla
++                    // item (so no gtceu: id exists), but which Terraria has no
++                    // equivalent for. Declared here so the C# MaterialItemRegistry
++                    // materialises them like any other material item, procedural
++                    // textures and all (shared emitRenderLayers). The C# side
++                    // maps the vanilla id → (material, prefix) in VanillaSubstitution.
++                    java.util.Map<String, com.gregtechceu.gtceu.api.data.chemical.material.Material> materialsByName =
++                            new java.util.HashMap<>();
++                    for (com.gregtechceu.gtceu.api.data.chemical.material.Material m :
++                            com.gregtechceu.gtceu.api.GTCEuAPI.materialManager.getRegisteredMaterials()) {
++                        materialsByName.put(m.getName(), m);
++                    }
++                    String[][] extras = {
++                            { "gold", "nugget" }, { "iron", "nugget" },
++                            { "iron", "block" }, { "gold", "block" }, { "copper", "block" },
++                            { "diamond", "block" }, { "emerald", "block" }, { "lapis", "block" },
++                            { "amethyst", "block" }, { "coal", "block" }, { "nether_quartz", "block" },
++                            { "iron", "rawOreBlock" }, { "gold", "rawOreBlock" }, { "copper", "rawOreBlock" },
++                            // Raw items — upstream defers iron/copper/gold to MC's
++                            // `minecraft:raw_<m>` (so no gtceu: id), but the Terraria
++                            // port has no vanilla equivalent for raw GT ore. Adding
++                            // them here closes the OreTile drop gap.
++                            { "iron", "raw" }, { "copper", "raw" }, { "gold", "raw" },
++                            { "glowstone", "dust" }, { "redstone", "dust" }, { "sugar", "dust" },
++                            { "blaze", "dust" }, { "bone", "dust" },
++                            { "amethyst", "gem" }, { "lapis", "gem" }, { "nether_quartz", "gem" },
++                            // Coal: upstream uses MC's `minecraft:coal` for the
++                            // base gem role and registers only the quality variants
++                            // (chipped/flawed/exquisite_coal_gem). The Terraria port
++                            // has no good vanilla coal equivalent (ItemID.Coal is the
++                            // Christmas gag, maxStack=1), so synthesise `coal_gem`
++                            // — closes `forge:gems/coal` resolution + the existing
++                            // ItemID.Coal → coal_gem hand recipe.
++                            { "coal", "gem" },
++                            { "charcoal", "gem" }, { "flint", "gem" }, { "ender_pearl", "gem" },
++                            { "ender_eye", "gem" }, { "echo_shard", "gem" }, { "nether_star", "gem" },
++                            { "clay", "gem" },
++                            { "netherite", "ingot" }, { "brick", "ingot" }, { "wax", "ingot" },
++                            { "blaze", "rod" }, { "wood", "rod" },
++                            { "redstone", "block" }, { "glowstone", "block" },
++                            { "paper", "plate" },
++                    };
++                    for (String[] pair : extras) {
++                        com.gregtechceu.gtceu.api.data.chemical.material.Material material =
++                                materialsByName.get(pair[0]);
++                        com.gregtechceu.gtceu.api.data.tag.TagPrefix prefix =
++                                com.gregtechceu.gtceu.api.data.tag.TagPrefix.get(pair[1]);
++                        if (material == null || prefix == null) continue;
++                        boolean isBlock = pair[1].equals("block") || pair[1].equals("rawOreBlock");
++                        String id = "gtceu:" + (
++                                pair[1].equals("rawOreBlock") ? "raw_" + pair[0] + "_block" :
++                                pair[1].equals("raw")         ? "raw_" + pair[0] :
++                                                                pair[0] + "_" + pair[1]);
++                        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
++                        o.addProperty("id", id);
++                        o.addProperty("class", isBlock
++                                ? "com.gregtechceu.gtceu.api.item.MaterialBlockItem"
++                                : "com.gregtechceu.gtceu.api.item.TagPrefixItem");
++                        o.addProperty("maxStack", 64);
++                        o.addProperty("maxDamage", 0);
++                        o.addProperty("fireResistant", false);
++                        o.addProperty("rarity", "COMMON");
++                        o.addProperty("material", material.getName());
++                        o.addProperty("prefix", prefix.name);
++                        emitRenderLayers(o, material, prefix, packOutput, isBlock ? "block" : "item");
++                        byId.put(id, o);
++                    }
++
++                    com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
++                    for (com.google.gson.JsonObject entry : byId.values()) arr.add(entry);
++                    return net.minecraft.data.DataProvider.saveStable(cache, arr,
++                            packOutput.getOutputFolder().resolve("registry").resolve("items.json"));
++                }
++
++                @Override
++                public String getName() {
++                    return "GregTechCEuTerraria Item Registry Dump";
++                }
++            });
++
++            // [GregTechCEuTerraria port] Dump every registered Material's
++            // chemistry to registry/materials.json, straight off the live
++            // registry — replaces regex-parsing the GTMaterials builder source.
++            generator.addProvider(true, new net.minecraft.data.DataProvider() {
++                @Override
++                public java.util.concurrent.CompletableFuture<?> run(net.minecraft.data.CachedOutput cache) {
++                    // Keyed + sorted by id — deterministic across runData runs.
++                    java.util.TreeMap<String, com.google.gson.JsonObject> byId = new java.util.TreeMap<>();
++                    for (com.gregtechceu.gtceu.api.data.chemical.material.Material m :
++                            com.gregtechceu.gtceu.api.GTCEuAPI.materialManager.getRegisteredMaterials()) {
++                        byId.put(m.getName(), materialJson(m));
++                    }
++                    com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
++                    for (com.google.gson.JsonObject entry : byId.values()) arr.add(entry);
++                    return net.minecraft.data.DataProvider.saveStable(cache, arr,
++                            packOutput.getOutputFolder().resolve("registry").resolve("materials.json"));
++                }
++
++                @Override
++                public String getName() {
++                    return "GregTechCEuTerraria Material Registry Dump";
++                }
++            });
++
++            // [GregTechCEuTerraria port] Dump every registered ore vein to
++            // registry/veins.json, straight off GTRegistries.ORE_VEINS. Replaces
++            // the standalone .NET regex extractor (tools/gtceu-extract veins) +
++            // its MaterialAliasResolver — runData sees real Material instances,
++            // so there's no need to maintain a field-name → id map. Schema
++            // matches what the old extractor emitted: id / clusterSize /
++            // density / weight / layer / height / biome / generatorType /
++            // materials [{materialId, weight, sizeMin, sizeMax}]. The C# loader
++            // (VeinJsonLoader → VeinDefinition) reads MaterialId + Weight per
++            // material; sizeMin/sizeMax are kept at 1 for forward compat (the
++            // old extractor's per-generator size extraction varied by type and
++            // the C# side never read it — see OreWorldGen.cs:111).
++            generator.addProvider(true, new net.minecraft.data.DataProvider() {
++                @Override
++                public java.util.concurrent.CompletableFuture<?> run(net.minecraft.data.CachedOutput cache) {
++                    // ORE_VEINS is populated by GTOreLoader (a resource-reload
++                    // listener), which never fires at datagen time. Mirror the
++                    // production load order — same pattern the recipe provider
++                    // uses for GTRecipes.recipeAddition. Skip the json-overlay
++                    // pass + freeze (no resources at datagen time; later
++                    // resource reloads handle freeze themselves).
++                    if (com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.isFrozen()) {
++                        com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.unfreeze();
++                    }
++                    com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.clear();
++                    com.gregtechceu.gtceu.common.data.GTOres.init();
++                    com.gregtechceu.gtceu.api.addon.AddonFinder.getAddons()
++                            .forEach(com.gregtechceu.gtceu.api.addon.IGTAddon::registerOreVeins);
++
++                    com.google.gson.JsonArray arr = new com.google.gson.JsonArray();
++                    // Keyed iteration via ORE_VEINS.entries() returns a deterministic order
++                    // when sorted by id. Sort explicitly so runData diffs stay clean.
++                    java.util.List<java.util.Map.Entry<net.minecraft.resources.ResourceLocation,
++                            com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition>> entries =
++                            new java.util.ArrayList<>(
++                                    com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.entries());
++                    entries.sort(java.util.Map.Entry.comparingByKey());
++                    for (var e : entries) {
++                        net.minecraft.resources.ResourceLocation id = e.getKey();
++                        com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition def = e.getValue();
++                        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
++                        // The id path matches what the old extractor wrote (no namespace prefix).
++                        o.addProperty("id", id.getPath());
++
++                        // Layer: IWorldGenLayer.getSerializedName() is lowercase
++                        // ("stone"/"deepslate"/"netherrack"/"endstone"); the C#
++                        // schema is uppercase to match the upstream Java enum
++                        // constant names — uppercase here.
++                        String layerName = def.layer() == null ? "STONE"
++                                : def.layer().getSerializedName().toUpperCase(java.util.Locale.ROOT);
++                        o.addProperty("layer", layerName);
++
++                        // Biome — derived from layer with the same fallback the
++                        // old extractor used. The C# side reads this only for
++                        // diagnostics (band selection is layer-driven).
++                        String biome = switch (layerName) {
++                            case "NETHERRACK" -> "NETHER";
++                            case "ENDSTONE" -> "END";
++                            default -> "OVERWORLD";
++                        };
++                        o.addProperty("biome", biome);
++
++                        // height range — read via the private inferredProperties
++                        // field, which heightRangeUniform/heightRangeTriangle
++                        // both capture as (min, max). Codec serialization of
++                        // HeightRangePlacement is opaque (the HeightProvider's
++                        // anchors aren't directly exposed); reflection on the
++                        // already-captured pair is reliable and avoids guessing
++                        // the codec's JSON shape.
++                        try {
++                            java.lang.reflect.Field ipField =
++                                    com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition.class
++                                            .getDeclaredField("inferredProperties");
++                            ipField.setAccessible(true);
++                            Object inferred = ipField.get(def);
++                            if (inferred != null) {
++                                java.lang.reflect.Field hrField = inferred.getClass()
++                                        .getDeclaredField("heightRange");
++                                hrField.setAccessible(true);
++                                Object pair = hrField.get(inferred);
++                                if (pair instanceof it.unimi.dsi.fastutil.ints.IntIntPair iip) {
++                                    o.addProperty("heightMin", iip.firstInt());
++                                    o.addProperty("heightMax", iip.secondInt());
++                                }
++                            }
++                        } catch (ReflectiveOperationException ignored) {}
++
++                        o.addProperty("weight", def.weight());
++                        o.addProperty("density", def.density());
++
++                        if (def.clusterSize() != null) {
++                            o.addProperty("clusterSizeMin", def.clusterSize().getMinValue());
++                            o.addProperty("clusterSizeMax", def.clusterSize().getMaxValue());
++                        }
++
++                        // Generator type — reverse-lookup via the bimap of registered
++                        // VeinGenerator codecs. .getPath() drops the gtceu: namespace.
++                        // Upstream registers LayeredVeinGenerator at id "layer" (not
++                        // "layered"); the old extractor's regex matched the BUILDER
++                        // METHOD name (`.layeredVeinGenerator(...)`) and emitted
++                        // "layered". Remap to preserve the existing schema string.
++                        String generatorType = "unknown";
++                        if (def.veinGenerator() != null) {
++                            net.minecraft.resources.ResourceLocation genId =
++                                    com.gregtechceu.gtceu.api.data.worldgen.WorldGeneratorUtils.VEIN_GENERATORS
++                                            .inverse().get(def.veinGenerator().codec());
++                            if (genId != null) {
++                                String path = genId.getPath();
++                                generatorType = path.equals("layer") ? "layered" : path;
++                            }
++                        }
++                        o.addProperty("generatorType", generatorType);
++
++                        // Materials list — walk every entry, resolve to Material
++                        // (BlockState entries go through ChemicalHelper), keep
++                        // the (chance == weight) pairing. NULL materials are
++                        // filtered, matching the old extractor's
++                        // MaterialAliasResolver behaviour where unresolvable
++                        // refs were dropped. sizeMin/sizeMax pinned at 1 — C#
++                        // never reads them.
++                        com.google.gson.JsonArray mats = new com.google.gson.JsonArray();
++                        if (def.veinGenerator() != null) {
++                            for (var ve : def.veinGenerator().getAllEntries()) {
++                                var mat = ve.mapToMaterial();
++                                if (mat == null || mat.isNull()) continue;
++                                com.google.gson.JsonObject m = new com.google.gson.JsonObject();
++                                m.addProperty("materialId", mat.getName());
++                                m.addProperty("weight", ve.chance());
++                                m.addProperty("sizeMin", 1);
++                                m.addProperty("sizeMax", 1);
++                                mats.add(m);
++                            }
++                        }
++                        o.add("materials", mats);
++
++                        arr.add(o);
++                    }
++                    // Re-freeze so downstream providers (Registrate lang's
++                    // IntegrationLang.initRecipeViewerLang) can unfreeze again
++                    // without an "already unfrozen" RuntimeException.
++                    if (!com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.isFrozen()) {
++                        com.gregtechceu.gtceu.api.registry.GTRegistries.ORE_VEINS.freeze();
++                    }
++                    return net.minecraft.data.DataProvider.saveStable(cache, arr,
++                            packOutput.getOutputFolder().resolve("registry").resolve("veins.json"));
++                }
++
++                @Override
++                public String getName() {
++                    return "GregTechCEuTerraria Ore Vein Registry Dump";
++                }
++            });
++
++            // [GregTechCEuTerraria port] Dump GregTech's material-prefix item
++            // tags (forge:ingots/iron, forge:dusts/copper, …) to
++            // registry/material_item_tags.json. These tags are attached at item
++            // registration time, NOT via the datagen TagsProvider, so they are
++            // absent from data/<ns>/tags/items/ — yet the C# tag system needs
++            // them for recipe `#tag` resolution and the tag-filter covers. Each
++            // (TagPrefix × Material) yields its registered item (the vanilla
++            // item for vanilla materials, via ChemicalHelper unification) and
++            // the tags TagPrefix assigns it.
++            generator.addProvider(true, new net.minecraft.data.DataProvider() {
++                @Override
++                public java.util.concurrent.CompletableFuture<?> run(net.minecraft.data.CachedOutput cache) {
++                    java.util.Map<String, java.util.TreeSet<String>> tagMap = new java.util.TreeMap<>();
++                    // Real registry materials: forge:ingots/iron, forge:dusts/copper, …
++                    // Marker-material colours: glass lenses are unification-tagged
++                    // with (TagPrefix.lens × MarkerMaterials.Color) — that is what
++                    // produces forge:lenses/<colour>. MarkerMaterials are NOT in the
++                    // material registry, so they need their own pass; MarkerMaterial
++                    // extends Material, so ChemicalHelper.get / getAllItemTags accept
++                    // them unchanged. Non-lens prefixes yield an empty stack and skip.
++                    java.util.List<com.gregtechceu.gtceu.api.data.chemical.material.Material> allMats =
++                            new java.util.ArrayList<>(
++                                    com.gregtechceu.gtceu.api.GTCEuAPI.materialManager.getRegisteredMaterials());
++                    java.util.Collections.addAll(allMats,
++                            com.gregtechceu.gtceu.api.data.chemical.material.MarkerMaterials.Color.VALUES);
++                    for (com.gregtechceu.gtceu.api.data.tag.TagPrefix prefix :
++                            com.gregtechceu.gtceu.api.data.tag.TagPrefix.PREFIXES.values()) {
++                        for (com.gregtechceu.gtceu.api.data.chemical.material.Material mat : allMats) {
++                            net.minecraft.world.item.ItemStack stack =
++                                    com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper.get(prefix, mat);
++                            if (stack.isEmpty()) continue;
++                            net.minecraft.resources.ResourceLocation itemId =
++                                    net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
++                            if (itemId == null) continue;
++                            for (net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag :
++                                    prefix.getAllItemTags(mat)) {
++                                tagMap.computeIfAbsent(tag.location().toString(),
++                                        k -> new java.util.TreeSet<>()).add(itemId.toString());
++                            }
++                        }
++                    }
++                    com.google.gson.JsonObject root = new com.google.gson.JsonObject();
++                    for (java.util.Map.Entry<String, java.util.TreeSet<String>> e : tagMap.entrySet()) {
++                        com.google.gson.JsonArray a = new com.google.gson.JsonArray();
++                        for (String s : e.getValue()) a.add(s);
++                        root.add(e.getKey(), a);
++                    }
++                    return net.minecraft.data.DataProvider.saveStable(cache, root,
++                            packOutput.getOutputFolder().resolve("registry").resolve("material_item_tags.json"));
++                }
++
++                @Override
++                public String getName() {
++                    return "GregTechCEuTerraria Material Item-Tag Dump";
++                }
++            });
++        }
++    }
++
++    // === [GregTechCEuTerraria port] dump helpers ============================
++
++    // Builds one material's chemistry JSON straight off the live Material.
++    private static com.google.gson.JsonObject materialJson(
++            com.gregtechceu.gtceu.api.data.chemical.material.Material m) {
++        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
++        o.addProperty("id", m.getName());
++        o.addProperty("color", m.getMaterialRGB() & 0xFFFFFF);
++        int sec = m.getMaterialSecondaryRGB();
++        if ((sec & 0xFFFFFF) != (m.getMaterialRGB() & 0xFFFFFF))
++            o.addProperty("secondaryColor", sec & 0xFFFFFF);
++        o.addProperty("iconSet", m.getMaterialIconSet().name);
++
++        if (m.getElement() != null) {
++            o.addProperty("element", m.getElement().symbol());
++            o.addProperty("protonCount", m.getProtons());
++            o.addProperty("neutronCount", m.getNeutrons());
++        }
++
++        com.google.gson.JsonArray comps = new com.google.gson.JsonArray();
++        for (com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack s : m.getMaterialComponents()) {
++            com.google.gson.JsonObject c = new com.google.gson.JsonObject();
++            c.addProperty("materialId", s.material().getName());
++            c.addProperty("amount", s.amount());
++            comps.add(c);
++        }
++        if (comps.size() > 0) o.add("components", comps);
++
++        com.google.gson.JsonArray forms = new com.google.gson.JsonArray();
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.INGOT))   forms.add("INGOT");
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.DUST))    forms.add("DUST");
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.GEM))     forms.add("GEM");
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.ORE))     forms.add("ORE");
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.WOOD))    forms.add("WOOD");
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.POLYMER)) forms.add("POLYMER");
++
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.BLAST)) {
++            o.addProperty("blastTemperatureK", m.getBlastTemperature());
++            var bp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.BLAST);
++            if (bp.getGasTier() != null) o.addProperty("blastGasTier", bp.getGasTier().name());
++        }
++
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.WIRE)) {
++            var wp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.WIRE);
++            String tier = voltageTierName(wp.getVoltage());
++            if (tier != null) o.addProperty("cableTier", tier);
++            o.addProperty("cableAmperage", wp.getAmperage());
++            o.addProperty("cableLoss", wp.getLossPerBlock());
++            if (wp.isSuperconductor()) {
++                o.addProperty("cableIsSuperconductor", true);
++                o.addProperty("cableCriticalTempK", wp.getSuperconductorCriticalTemperature());
++            }
++        }
++
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.FLUID)) {
++            var fp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.FLUID);
++            com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey[] keys = {
++                    com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys.LIQUID,
++                    com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys.GAS,
++                    com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys.PLASMA,
++            };
++            String[] keyNames = { "LIQUID", "GAS", "PLASMA" };
++            com.google.gson.JsonArray fluids = new com.google.gson.JsonArray();
++            // Emit the PRIMARY fluid first. The C# MaterialJsonLoader treats
++            // fluids[0]'s key as the material's primary fluid form, which drives
++            // fluid-id naming (a non-primary LIQUID becomes `liquid_<name>`, a
++            // non-primary GAS becomes `<name>_gas`). Upstream's primary is
++            // FluidProperty.getPrimaryKey() — NOT the LIQUID/GAS/PLASMA
++            // iteration order — so e.g. oxygen (primary GAS) must list GAS
++            // first or its liquid is misnamed `oxygen` and `liquid_oxygen`
++            // never registers. Pass 0 = primary only, pass 1 = the rest.
++            com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey primaryKey = fp.getPrimaryKey();
++            for (int pass = 0; pass < 2; pass++) {
++            for (int i = 0; i < keys.length; i++) {
++                boolean isPrimary = keys[i] == primaryKey;
++                if (pass == 0 ? !isPrimary : isPrimary) continue;
++                net.minecraft.world.level.material.Fluid fl = fp.get(keys[i]);
++                if (fl == null) continue;
++                com.google.gson.JsonObject fo = new com.google.gson.JsonObject();
++                fo.addProperty("key", keyNames[i]);
++                // The upstream FluidBuilder is consumed by datagen time, so
++                // read the final resolved values back off the registered
++                // GTFluid + its Forge FluidType (post-inference). color /
++                // disableColor stay unset — the C# loader infers color from
++                // the material RGB, which matches determineColor for all but
++                // a handful of explicit-color fluids.
++                if (fl instanceof com.gregtechceu.gtceu.api.fluids.GTFluid gtf) {
++                    fo.addProperty("state", gtf.getState().name());
++                    if (gtf.getBurnTime() > 0) fo.addProperty("burnTime", gtf.getBurnTime());
++                    net.minecraftforge.fluids.FluidType ft = gtf.getFluidType();
++                    fo.addProperty("temperature", ft.getTemperature());
++                    fo.addProperty("density", ft.getDensity());
++                    fo.addProperty("luminosity", ft.getLightLevel());
++                    fo.addProperty("viscosity", ft.getViscosity());
++                    if (!gtf.getAttributes().isEmpty()) {
++                        com.google.gson.JsonArray aj = new com.google.gson.JsonArray();
++                        for (com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute a : gtf.getAttributes())
++                            aj.add(a.getResourceLocation().getPath());
++                        fo.add("attributes", aj);
++                    }
++                }
++                fluids.add(fo);
++                forms.add(keyNames[i]);
++            }
++            }
++            if (fluids.size() > 0) o.add("fluids", fluids);
++        }
++
++        // [GregTechCEuTerraria port] Fluid-pipe property — drives the C# drum
++        // fluid filter (IPropertyFluidFilter): a material's drum may only hold
++        // fluids its FLUID_PIPE property permits (temperature cap, gas / cryo /
++        // plasma / acid containment). Mirrors FluidPipeProperties' data fields.
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.FLUID_PIPE)) {
++            var pp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.FLUID_PIPE);
++            com.google.gson.JsonObject fp = new com.google.gson.JsonObject();
++            fp.addProperty("maxFluidTemperature", pp.getMaxFluidTemperature());
++            fp.addProperty("throughput", pp.getThroughput());
++            fp.addProperty("channels", pp.getChannels());
++            fp.addProperty("gasProof", pp.isGasProof());
++            fp.addProperty("cryoProof", pp.isCryoProof());
++            fp.addProperty("plasmaProof", pp.isPlasmaProof());
++            fp.addProperty("acidProof", pp.isAcidProof());
++            o.add("fluidPipe", fp);
++        }
++
++        // [GregTechCEuTerraria port] Tool property — drives the C# tool port
++        // (Api/Item/Tool). Mirrors ToolProperty's data fields verbatim; the
++        // `types` array (GTToolType.name) is the generation source for which
++        // (material x toolType) tool items exist, since the registry item dump
++        // does not carry toolType/material per GTToolItem.
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.TOOL)) {
++            var tp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.TOOL);
++            com.google.gson.JsonObject t = new com.google.gson.JsonObject();
++            t.addProperty("harvestSpeed", tp.getHarvestSpeed());
++            t.addProperty("attackDamage", tp.getAttackDamage());
++            t.addProperty("attackSpeed", tp.getAttackSpeed());
++            t.addProperty("durability", tp.getDurability());
++            t.addProperty("harvestLevel", tp.getHarvestLevel());
++            t.addProperty("prospectingDepth", tp.getProspectingDepth());
++            t.addProperty("enchantability", tp.getEnchantability());
++            t.addProperty("durabilityMultiplier", tp.getDurabilityMultiplier());
++            if (tp.isUnbreakable()) t.addProperty("unbreakable", true);
++            if (tp.isMagnetic()) t.addProperty("magnetic", true);
++            if (tp.isIgnoreCraftingTools()) t.addProperty("ignoreCraftingTools", true);
++            com.google.gson.JsonArray toolTypes = new com.google.gson.JsonArray();
++            if (tp.getTypes() != null)
++                for (com.gregtechceu.gtceu.api.item.tool.GTToolType tt : tp.getTypes())
++                    toolTypes.add(tt.name);
++            t.add("types", toolTypes);
++            o.add("tool", t);
++        }
++
++        // [GregTechCEuTerraria port] Rotor property — drives the C# rotor port
++        // (TurbineRotorItem + RotorHolderPartMachine). Power + efficiency only;
++        // damage + durability are skipped on the Terraria side (no item durability,
++        // no rotor-as-melee-weapon).
++        if (m.hasProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.ROTOR)) {
++            var rp = m.getProperty(com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.ROTOR);
++            com.google.gson.JsonObject r = new com.google.gson.JsonObject();
++            r.addProperty("power", rp.getPower());
++            r.addProperty("efficiency", rp.getEfficiency());
++            o.add("rotor", r);
++        }
++
++        o.add("forms", forms);
++        return o;
++    }
++
++    // GTCEu wire voltage → tier name (V[] index → VN[]).
++    private static String voltageTierName(long voltage) {
++        for (int i = 0; i < com.gregtechceu.gtceu.api.GTValues.V.length; i++)
++            if (com.gregtechceu.gtceu.api.GTValues.V[i] == voltage)
++                return com.gregtechceu.gtceu.api.GTValues.VN[i];
++        return null;
++    }
++
++    // Emits a `render` block onto a material item's JSON — the ordered
++    // {texture, argb} layers upstream renders. MaterialIconType.getItemTexturePath
++    // bails server-side, so we replicate its iconset-parent-chain fallback by
++    // walking the source texture tree directly. argb is Material.getLayerARGB
++    // (upstream's exact per-layer tint; -1/0xFFFFFFFF means untinted).
++    // `category` is "item" (TagPrefixItem) or "block" (MaterialBlockItem) —
++    // upstream splits per-prefix item sprites from block sprites into two trees.
++    private static void emitRenderLayers(com.google.gson.JsonObject o,
++            com.gregtechceu.gtceu.api.data.chemical.material.Material material,
++            com.gregtechceu.gtceu.api.data.tag.TagPrefix tagPrefix,
++            net.minecraft.data.PackOutput packOutput, String category) {
++        var iconType = tagPrefix.materialIconType();
++        if (iconType == null) return;
++
++        // ingotHot's item model (ingot_hot.json) is hand-authored — it reuses
++        // the regular `ingot` textures and adds an `ingot_hot_overlay` layer
++        // (and radioactive parents dull/ingot_hot cross-iconset). The
++        // iconType-name + suffix heuristic below can't reconstruct that: it
++        // looks for a nonexistent `ingot_hot_secondary` and stops after the
++        // base layer. Read the model JSON directly for this prefix instead.
++        if (category.equals("item")
++                && tagPrefix == com.gregtechceu.gtceu.api.data.tag.TagPrefix.ingotHot) {
++            emitRenderLayersFromModel(o, material, iconType, packOutput);
++            return;
++        }
++
++        // If the material's iconSet ships an explicit per-prefix model JSON
++        // (e.g. `magnetic/rod.json` overrides layer2 to magnetic_overlay; the
++        // metallic parent provides the base + secondary), read the model JSON
++        // directly. The filename-suffix heuristic below would pin EVERY layer
++        // to the resolved owner iconset and miss the override entirely — for
++        // magnetic_iron's rod that strips the magnetic stripes back to a plain
++        // metallic rod. Apply only to `item` (block textures don't use
++        // model-JSON overrides this way).
++        if (category.equals("item")) {
++            String typeNameProbe = iconType.name();
++            java.nio.file.Path modelProbe = packOutput.getOutputFolder().getParent().getParent()
++                    .resolve("main/resources/assets/gtceu/models/item/material_sets/"
++                            + material.getMaterialIconSet().name + "/" + typeNameProbe + ".json");
++            if (java.nio.file.Files.exists(modelProbe)) {
++                emitRenderLayersFromModel(o, material, iconType, packOutput);
++                return;
++            }
++        }
++
++        String typeName = iconType.name();
++        // Texture filename ≠ icon-type name for one upstream oddity:
++        // MaterialIconType.toolHeadWireCutter → `tool_head_wire_cutter`, but the
++        // shipped sprite is `tool_head_wirecutter.png` (one word).
++        String texName = typeName.equals("tool_head_wire_cutter") ? "tool_head_wirecutter" : typeName;
++        var iconSet = material.getMaterialIconSet();
++        String rel = category + "/material_sets";
++        java.nio.file.Path texDir = packOutput.getOutputFolder().getParent().getParent()
++                .resolve("main/resources/assets/gtceu/textures/" + rel);
++
++        // Resolve the iconset that owns layer 0, then pin EVERY layer to it.
++        // Upstream's per-(iconType,iconSet) model is a single iconset — its
++        // _secondary / _overlay textures sit in the SAME folder. Resolving each
++        // layer's iconset independently would let an aux layer fall through to
++        // a different parent set (e.g. radioactive/plate_secondary stranded on
++        // a metallic/plate base) — a stray-overlay artifact.
++        String owner = resolveIconSet(iconSet, texName, "", texDir);
++        if (owner == null) return;   // no base texture for this icon type
++
++        com.google.gson.JsonArray layers = new com.google.gson.JsonArray();
++        String[] suffixes = { "", "_secondary", "_overlay" };
++        for (int i = 0; i < suffixes.length; i++) {
++            if (!java.nio.file.Files.exists(texDir.resolve(owner).resolve(texName + suffixes[i] + ".png")))
++                break;   // contiguous layer0/1/2 within the owning iconset
++            com.google.gson.JsonObject layer = new com.google.gson.JsonObject();
++            layer.addProperty("texture", rel + "/" + owner + "/" + texName + suffixes[i]);
++            layer.addProperty("argb", material.getLayerARGB(i));
++            layers.add(layer);
++        }
++        if (layers.size() == 0) return;
++        com.google.gson.JsonObject render = new com.google.gson.JsonObject();
++        render.addProperty("iconType", typeName);
++        render.addProperty("iconSet", iconSet.name);
++        render.add("layers", layers);
++        o.add("render", render);
++    }
++
++    // Reads a hand-authored item model JSON (item/material_sets/<set>/<type>.json)
++    // and emits its layerN textures verbatim — for prefixes like ingotHot whose
++    // model reuses other iconTypes' textures and so can't be reconstructed from
++    // the iconType-name + suffix convention emitRenderLayers assumes.
++    private static void emitRenderLayersFromModel(com.google.gson.JsonObject o,
++            com.gregtechceu.gtceu.api.data.chemical.material.Material material,
++            com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType iconType,
++            net.minecraft.data.PackOutput packOutput) {
++        java.nio.file.Path models = packOutput.getOutputFolder().getParent().getParent()
++                .resolve("main/resources/assets/gtceu/models");
++        var iconSet = material.getMaterialIconSet();
++        String typeName = iconType.name();
++
++        // Walk the iconset parent chain for the first set that ships the model.
++        String owner = null;
++        var cur = iconSet;
++        while (cur != null) {
++            if (java.nio.file.Files.exists(
++                    models.resolve("item/material_sets/" + cur.name + "/" + typeName + ".json"))) {
++                owner = cur.name;
++                break;
++            }
++            if (cur.isRootIconset) break;
++            cur = cur.parentIconset;
++        }
++        if (owner == null) return;
++
++        // Merge layerN textures across the model's parent chain (parent first,
++        // child overrides) — e.g. radioactive/ingot_hot parents dull/ingot_hot.
++        java.util.TreeMap<Integer, String> layerTextures = new java.util.TreeMap<>();
++        collectModelLayers(models, "item/material_sets/" + owner + "/" + typeName, layerTextures, 0);
++        if (layerTextures.isEmpty()) return;
++
++        com.google.gson.JsonArray layers = new com.google.gson.JsonArray();
++        for (var entry : layerTextures.entrySet()) {
++            com.google.gson.JsonObject layer = new com.google.gson.JsonObject();
++            layer.addProperty("texture", entry.getValue());
++            layer.addProperty("argb", material.getLayerARGB(entry.getKey()));
++            layers.add(layer);
++        }
++        com.google.gson.JsonObject render = new com.google.gson.JsonObject();
++        render.addProperty("iconType", typeName);
++        render.addProperty("iconSet", iconSet.name);
++        render.add("layers", layers);
++        o.add("render", render);
++    }
++
++    // Recursively merges `layerN` texture entries from an item model JSON and
++    // its `parent` chain. Parent layers are collected first so the child's
++    // `textures` block overrides them. `modelPath` is relative to .../models
++    // (e.g. "item/material_sets/dull/ingot_hot"), no extension.
++    private static void collectModelLayers(java.nio.file.Path models, String modelPath,
++            java.util.TreeMap<Integer, String> out, int depth) {
++        if (depth > 16) return;   // parent-chain cycle guard
++        java.nio.file.Path file = models.resolve(modelPath + ".json");
++        if (!java.nio.file.Files.exists(file)) return;
++        com.google.gson.JsonObject model;
++        try (var reader = java.nio.file.Files.newBufferedReader(file)) {
++            model = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
++        } catch (Exception ex) {
++            return;
++        }
++        if (model.has("parent")) {
++            String parent = model.get("parent").getAsString();
++            if (parent.startsWith("gtceu:")) parent = parent.substring(6);
++            if (parent.startsWith("item/material_sets/"))
++                collectModelLayers(models, parent, out, depth + 1);
++        }
++        if (model.has("textures")) {
++            com.google.gson.JsonObject tex = model.getAsJsonObject("textures");
++            for (var e : tex.entrySet()) {
++                if (!e.getKey().startsWith("layer")) continue;
++                int idx;
++                try {
++                    idx = Integer.parseInt(e.getKey().substring(5));
++                } catch (NumberFormatException nfe) {
++                    continue;
++                }
++                String t = e.getValue().getAsString();
++                if (t.startsWith("gtceu:")) t = t.substring(6);
++                out.put(idx, t);
++            }
++        }
++    }
++
++    // Walks iconSet → parentIconset until `<iconset>/<type><suffix>.png` exists;
++    // returns the owning iconset name, or null. Mirrors MaterialIconType's walk.
++    private static String resolveIconSet(
++            com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet iconSet,
++            String typeName, String suffix, java.nio.file.Path texDir) {
++        var cur = iconSet;
++        while (cur != null) {
++            if (java.nio.file.Files.exists(texDir.resolve(cur.name).resolve(typeName + suffix + ".png")))
++                return cur.name;
++            if (cur.isRootIconset) break;
++            cur = cur.parentIconset;
++        }
++        return null;
++    }
++}
+--- a/src/main/java/com/gregtechceu/gtceu/GTCEu.java	2026-06-01 04:00:01.223103100 +0400
++++ b/src/main/java/com/gregtechceu/gtceu/GTCEu.java	2026-05-18 12:45:00.310379600 +0400
+@@ -1,231 +1,236 @@
+-package com.gregtechceu.gtceu;
+-
+-import com.gregtechceu.gtceu.api.GTCEuAPI;
+-import com.gregtechceu.gtceu.api.GTValues;
+-import com.gregtechceu.gtceu.client.ClientProxy;
+-import com.gregtechceu.gtceu.common.CommonProxy;
+-import com.gregtechceu.gtceu.utils.FormattingUtil;
+-
+-import net.minecraft.client.Minecraft;
+-import net.minecraft.resources.ResourceLocation;
+-import net.minecraft.server.MinecraftServer;
+-import net.minecraftforge.fml.DistExecutor;
+-import net.minecraftforge.fml.ModList;
+-import net.minecraftforge.fml.common.Mod;
+-import net.minecraftforge.fml.loading.FMLEnvironment;
+-import net.minecraftforge.fml.loading.FMLLoader;
+-import net.minecraftforge.fml.loading.FMLPaths;
+-import net.minecraftforge.server.ServerLifecycleHooks;
+-
+-import dev.emi.emi.config.EmiConfig;
+-import me.shedaniel.rei.api.client.REIRuntime;
+-import org.apache.logging.log4j.LogManager;
+-import org.apache.logging.log4j.Logger;
+-
+-import java.nio.file.Path;
+-
+-@Mod(GTCEu.MOD_ID)
+-public class GTCEu {
+-
+-    public static final String MOD_ID = "gtceu";
+-    private static final ResourceLocation TEMPLATE_LOCATION = new ResourceLocation(MOD_ID, "");
+-    public static final String NAME = "GregTechCEu";
+-    public static final Logger LOGGER = LogManager.getLogger(NAME);
+-
+-    public static final Path GTCEU_FOLDER = getGameDir().resolve("gtceu");
+-
+-    public GTCEu() {
+-        GTCEu.init();
+-        GTCEuAPI.instance = this;
+-        DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+-    }
+-
+-    public static void init() {
+-        LOGGER.info("{} is initializing...", NAME);
+-    }
+-
+-    public static ResourceLocation id(String path) {
+-        if (path.isBlank()) {
+-            return TEMPLATE_LOCATION;
+-        }
+-
+-        int i = path.indexOf(':');
+-        if (i > 0) {
+-            return new ResourceLocation(path);
+-        } else if (i == 0) {
+-            path = path.substring(i + 1);
+-        }
+-        // only convert it to camel_case if it has any uppercase to begin with
+-        if (FormattingUtil.hasUpperCase(path)) {
+-            path = FormattingUtil.toLowerCaseUnderscore(path);
+-        }
+-        return TEMPLATE_LOCATION.withPath(path);
+-    }
+-
+-    public static String appendIdString(String id) {
+-        int i = id.indexOf(':');
+-        if (i > 0) {
+-            return id;
+-        } else if (i == 0) {
+-            return MOD_ID + id;
+-        } else {
+-            return MOD_ID + ":" + id;
+-        }
+-    }
+-
+-    /**
+-     * @return if we're running in a production environment
+-     */
+-    public static boolean isProd() {
+-        return FMLLoader.isProduction();
+-    }
+-
+-    /**
+-     * @return if we're not running in a production environment
+-     */
+-    public static boolean isDev() {
+-        return !isProd();
+-    }
+-
+-    /**
+-     * @return if we're running data generation
+-     */
+-    public static boolean isDataGen() {
+-        return FMLLoader.getLaunchHandler().isData();
+-    }
+-
+-    /**
+-     * A friendly reminder that the server instance is populated on the server side only, so null/side check it!
+-     * 
+-     * @return the current minecraft server instance
+-     */
+-    public static MinecraftServer getMinecraftServer() {
+-        return ServerLifecycleHooks.getCurrentServer();
+-    }
+-
+-    /**
+-     * @param modId the mod id to check for
+-     * @return if the mod whose id is {@code modId} is loaded or not
+-     */
+-    public static boolean isModLoaded(String modId) {
+-        return ModList.get().isLoaded(modId);
+-    }
+-
+-    /**
+-     * For async stuff use this, otherwise use {@link GTCEu isClientSide}
+-     * 
+-     * @return if the current thread is the client thread
+-     */
+-    public static boolean isClientThread() {
+-        return isClientSide() && Minecraft.getInstance().isSameThread();
+-    }
+-
+-    /**
+-     * @return if the game is the <strong>PHYSICAL</strong> client, e.g. not a dedicated server.
+-     * @apiNote Do not use this to check if you're currently on the server thread for side-specific actions!
+-     *          It does <strong>NOT</strong> work for that. Use {@link #isClientThread()} instead.
+-     * @see #isClientThread()
+-     */
+-    public static boolean isClientSide() {
+-        return FMLEnvironment.dist.isClient();
+-    }
+-
+-    /**
+-     * This check isn't the same for client and server!
+-     * 
+-     * @return if it's safe to access the current instance {@link net.minecraft.world.level.Level Level} on client or if
+-     *         it's safe to access any level on server.
+-     */
+-    public static boolean canGetServerLevel() {
+-        if (isClientSide()) {
+-            return Minecraft.getInstance().level != null;
+-        }
+-        var server = getMinecraftServer();
+-        return server != null &&
+-                !(server.isStopped() || server.isShutdown() || !server.isRunning() || server.isCurrentlySaving());
+-    }
+-
+-    /**
+-     * @return the path to the minecraft instance directory
+-     */
+-    public static Path getGameDir() {
+-        return FMLPaths.GAMEDIR.get();
+-    }
+-
+-    public static class Mods {
+-
+-        public static boolean isJEILoaded() {
+-            return !(isModLoaded(GTValues.MODID_EMI) || isModLoaded(GTValues.MODID_REI)) &&
+-                    isModLoaded(GTValues.MODID_JEI);
+-        }
+-
+-        public static boolean isREILoaded() {
+-            return isModLoaded(GTValues.MODID_REI) && (!isClientSide() || REIRuntime.getInstance().isOverlayVisible());
+-        }
+-
+-        public static boolean isEMILoaded() {
+-            return isModLoaded(GTValues.MODID_EMI) && (!isClientSide() || EmiConfig.enabled);
+-        }
+-
+-        public static boolean isKubeJSLoaded() {
+-            return isModLoaded(GTValues.MODID_KUBEJS);
+-        }
+-
+-        public static boolean isIrisOculusLoaded() {
+-            return isModLoaded(GTValues.MODID_IRIS) || isModLoaded(GTValues.MODID_OCULUS);
+-        }
+-
+-        public static boolean isSodiumRubidiumEmbeddiumLoaded() {
+-            return isModLoaded(GTValues.MODID_SODIUM) || isModLoaded(GTValues.MODID_RUBIDIUM) ||
+-                    isModLoaded(GTValues.MODID_EMBEDDIUM);
+-        }
+-
+-        public static boolean isAE2Loaded() {
+-            return isModLoaded(GTValues.MODID_APPENG);
+-        }
+-
+-        public static boolean isCuriosLoaded() {
+-            return isModLoaded(GTValues.MODID_CURIOS);
+-        }
+-
+-        public static boolean isShimmerLoaded() {
+-            return isModLoaded(GTValues.MODID_SHIMMER);
+-        }
+-
+-        public static boolean isModernFixLoaded() {
+-            return isModLoaded(GTValues.MODID_MODERNFIX);
+-        }
+-
+-        public static boolean isJAVDLoaded() {
+-            return isModLoaded(GTValues.MODID_JAVD);
+-        }
+-
+-        public static boolean isFTBTeamsLoaded() {
+-            return isModLoaded(GTValues.MODID_FTB_TEAMS);
+-        }
+-
+-        public static boolean isHeraclesLoaded() {
+-            return isModLoaded(GTValues.MODID_HERACLES);
+-        }
+-
+-        public static boolean isFTBQuestsLoaded() {
+-            return isModLoaded(GTValues.MODID_FTB_QUEST);
+-        }
+-
+-        public static boolean isArgonautsLoaded() {
+-            return isModLoaded(GTValues.MODID_ARGONAUTS);
+-        }
+-
+-        public static boolean isGameStagesLoaded() {
+-            return isModLoaded(GTValues.MODID_GAMESTAGES);
+-        }
+-
+-        public static boolean isCCTweakedLoaded() {
+-            return isModLoaded(GTValues.MODID_CCTWEAKED);
+-        }
+-
+-        public static boolean isCreateLoaded() {
+-            return isModLoaded(GTValues.MODID_CREATE);
+-        }
+-    }
+-}
++package com.gregtechceu.gtceu;
++
++import com.gregtechceu.gtceu.api.GTCEuAPI;
++import com.gregtechceu.gtceu.api.GTValues;
++import com.gregtechceu.gtceu.client.ClientProxy;
++import com.gregtechceu.gtceu.common.CommonProxy;
++import com.gregtechceu.gtceu.utils.FormattingUtil;
++
++import net.minecraft.client.Minecraft;
++import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.MinecraftServer;
++import net.minecraftforge.fml.DistExecutor;
++import net.minecraftforge.fml.ModList;
++import net.minecraftforge.fml.common.Mod;
++import net.minecraftforge.fml.loading.FMLEnvironment;
++import net.minecraftforge.fml.loading.FMLLoader;
++import net.minecraftforge.fml.loading.FMLPaths;
++import net.minecraftforge.server.ServerLifecycleHooks;
++
++import dev.emi.emi.config.EmiConfig;
++import me.shedaniel.rei.api.client.REIRuntime;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++
++import java.nio.file.Path;
++
++@Mod(GTCEu.MOD_ID)
++public class GTCEu {
++
++    public static final String MOD_ID = "gtceu";
++    private static final ResourceLocation TEMPLATE_LOCATION = new ResourceLocation(MOD_ID, "");
++    public static final String NAME = "GregTechCEu";
++    public static final Logger LOGGER = LogManager.getLogger(NAME);
++
++    public static final Path GTCEU_FOLDER = getGameDir().resolve("gtceu");
++
++    public GTCEu() {
++        GTCEu.init();
++        GTCEuAPI.instance = this;
++        DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
++    }
++
++    public static void init() {
++        LOGGER.info("{} is initializing...", NAME);
++    }
++
++    public static ResourceLocation id(String path) {
++        if (path.isBlank()) {
++            return TEMPLATE_LOCATION;
++        }
++
++        int i = path.indexOf(':');
++        if (i > 0) {
++            return new ResourceLocation(path);
++        } else if (i == 0) {
++            path = path.substring(i + 1);
++        }
++        // only convert it to camel_case if it has any uppercase to begin with
++        if (FormattingUtil.hasUpperCase(path)) {
++            path = FormattingUtil.toLowerCaseUnderscore(path);
++        }
++        return TEMPLATE_LOCATION.withPath(path);
++    }
++
++    public static String appendIdString(String id) {
++        int i = id.indexOf(':');
++        if (i > 0) {
++            return id;
++        } else if (i == 0) {
++            return MOD_ID + id;
++        } else {
++            return MOD_ID + ":" + id;
++        }
++    }
++
++    /**
++     * @return if we're running in a production environment
++     */
++    public static boolean isProd() {
++        return FMLLoader.isProduction();
++    }
++
++    /**
++     * @return if we're not running in a production environment
++     */
++    public static boolean isDev() {
++        return !isProd();
++    }
++
++    /**
++     * @return if we're running data generation
++     */
++    public static boolean isDataGen() {
++        return FMLLoader.getLaunchHandler().isData();
++    }
++
++    /**
++     * A friendly reminder that the server instance is populated on the server side only, so null/side check it!
++     * 
++     * @return the current minecraft server instance
++     */
++    public static MinecraftServer getMinecraftServer() {
++        return ServerLifecycleHooks.getCurrentServer();
++    }
++
++    /**
++     * @param modId the mod id to check for
++     * @return if the mod whose id is {@code modId} is loaded or not
++     */
++    public static boolean isModLoaded(String modId) {
++        return ModList.get().isLoaded(modId);
++    }
++
++    /**
++     * For async stuff use this, otherwise use {@link GTCEu isClientSide}
++     * 
++     * @return if the current thread is the client thread
++     */
++    public static boolean isClientThread() {
++        if (!isClientSide()) return false;
++        // [GregTechCEuTerraria port] null-safe for datagen — Minecraft.getInstance()
++        // returns null when running under `runData` even though FMLEnvironment.dist
++        // reports client. Without this guard, GTRecipeBuilder.toJson NPEs.
++        var mc = Minecraft.getInstance();
++        return mc != null && mc.isSameThread();
++    }
++
++    /**
++     * @return if the game is the <strong>PHYSICAL</strong> client, e.g. not a dedicated server.
++     * @apiNote Do not use this to check if you're currently on the server thread for side-specific actions!
++     *          It does <strong>NOT</strong> work for that. Use {@link #isClientThread()} instead.
++     * @see #isClientThread()
++     */
++    public static boolean isClientSide() {
++        return FMLEnvironment.dist.isClient();
++    }
++
++    /**
++     * This check isn't the same for client and server!
++     * 
++     * @return if it's safe to access the current instance {@link net.minecraft.world.level.Level Level} on client or if
++     *         it's safe to access any level on server.
++     */
++    public static boolean canGetServerLevel() {
++        if (isClientSide()) {
++            return Minecraft.getInstance().level != null;
++        }
++        var server = getMinecraftServer();
++        return server != null &&
++                !(server.isStopped() || server.isShutdown() || !server.isRunning() || server.isCurrentlySaving());
++    }
++
++    /**
++     * @return the path to the minecraft instance directory
++     */
++    public static Path getGameDir() {
++        return FMLPaths.GAMEDIR.get();
++    }
++
++    public static class Mods {
++
++        public static boolean isJEILoaded() {
++            return !(isModLoaded(GTValues.MODID_EMI) || isModLoaded(GTValues.MODID_REI)) &&
++                    isModLoaded(GTValues.MODID_JEI);
++        }
++
++        public static boolean isREILoaded() {
++            return isModLoaded(GTValues.MODID_REI) && (!isClientSide() || REIRuntime.getInstance().isOverlayVisible());
++        }
++
++        public static boolean isEMILoaded() {
++            return isModLoaded(GTValues.MODID_EMI) && (!isClientSide() || EmiConfig.enabled);
++        }
++
++        public static boolean isKubeJSLoaded() {
++            return isModLoaded(GTValues.MODID_KUBEJS);
++        }
++
++        public static boolean isIrisOculusLoaded() {
++            return isModLoaded(GTValues.MODID_IRIS) || isModLoaded(GTValues.MODID_OCULUS);
++        }
++
++        public static boolean isSodiumRubidiumEmbeddiumLoaded() {
++            return isModLoaded(GTValues.MODID_SODIUM) || isModLoaded(GTValues.MODID_RUBIDIUM) ||
++                    isModLoaded(GTValues.MODID_EMBEDDIUM);
++        }
++
++        public static boolean isAE2Loaded() {
++            return isModLoaded(GTValues.MODID_APPENG);
++        }
++
++        public static boolean isCuriosLoaded() {
++            return isModLoaded(GTValues.MODID_CURIOS);
++        }
++
++        public static boolean isShimmerLoaded() {
++            return isModLoaded(GTValues.MODID_SHIMMER);
++        }
++
++        public static boolean isModernFixLoaded() {
++            return isModLoaded(GTValues.MODID_MODERNFIX);
++        }
++
++        public static boolean isJAVDLoaded() {
++            return isModLoaded(GTValues.MODID_JAVD);
++        }
++
++        public static boolean isFTBTeamsLoaded() {
++            return isModLoaded(GTValues.MODID_FTB_TEAMS);
++        }
++
++        public static boolean isHeraclesLoaded() {
++            return isModLoaded(GTValues.MODID_HERACLES);
++        }
++
++        public static boolean isFTBQuestsLoaded() {
++            return isModLoaded(GTValues.MODID_FTB_QUEST);
++        }
++
++        public static boolean isArgonautsLoaded() {
++            return isModLoaded(GTValues.MODID_ARGONAUTS);
++        }
++
++        public static boolean isGameStagesLoaded() {
++            return isModLoaded(GTValues.MODID_GAMESTAGES);
++        }
++
++        public static boolean isCCTweakedLoaded() {
++            return isModLoaded(GTValues.MODID_CCTWEAKED);
++        }
++
++        public static boolean isCreateLoaded() {
++            return isModLoaded(GTValues.MODID_CREATE);
++        }
++    }
++}

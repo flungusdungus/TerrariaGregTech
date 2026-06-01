@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\tModLoader.targets" />
+  <PropertyGroup>
+    <AssemblyName>GregTechCEuTerraria</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <!--
+      Suppress tModLoader's CommonCollisionName analyzer for our Api.Recipe
+      namespace. Upstream's package is `com.gregtechceu.gtceu.api.recipe` and
+      our policy is to mirror it verbatim - renaming to `Recipes` would
+      drift from upstream and break every grep-based audit. The collision is
+      with `Terraria.Recipe`; we always reference our types with explicit
+      namespace prefixes (`GTRecipe`, `RecipeCondition`, etc.), so the
+      ambiguity is structural to the namespace name, not actual call sites.
+    -->
+    <NoWarn>$(NoWarn);CommonCollisionName</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Data\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <!--
+    QuestBooks soft dependency. The DLL gives us compile-time access to the QB
+    public API; build.txt's weakReferences makes tML load QB before us IF
+    installed. Private=false / CopyLocal=false so the DLL doesn't end up in
+    our output dir (tML loads it from QB's own .tmod at runtime).
+  -->
+  <ItemGroup>
+    <Reference Include="QuestBooks">
+      <HintPath>lib\QuestBooks.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

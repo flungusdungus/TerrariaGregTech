@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>GregTechCEuTerraria.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+  </ItemGroup>
+
+  <!--
+    Tests compile the mod's pure-logic source files directly (no tML / Terraria
+    deps). When adding a new testable file, list it here with its real path.
+
+    Files that touch Main.*, ModTile, ModItem, Terraria.* or Microsoft.Xna.*
+    cannot be included. Excluded for that reason:
+      - Api/Fluids/FluidStack.cs      (using Terraria.ModLoader.IO - TagCompound)
+      - TerrariaCompat/Pipelike/Cable/EnergyNet*.cs (the live net - using Terraria / Xna)
+    VoltageTier.cs references Microsoft.Xna.Framework.Color + Vector3 in two
+    convenience methods; the test project supplies byte/float-compatible stubs
+    (XnaStubs.cs) so the otherwise-pure file compiles without the real XNA assembly.
+  -->
+  <ItemGroup>
+    <Compile Include="..\..\GregTechCEuTerraria\Common\Materials\IconSetHierarchy.cs"                    Link="Source/IconSetHierarchy.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Worldgen\VeinDefinition.cs"               Link="Source/VeinDefinition.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Worldgen\LayerDepthMapping.cs"            Link="Source/LayerDepthMapping.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Common\Energy\VoltageTier.cs"                            Link="Source/VoltageTier.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\OverclockingLogic.Algorithms.cs"              Link="Source/OverclockingLogic.Algorithms.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Pipenet\GridLayer.cs"                                Link="Source/GridLayer.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Pipelike\Cable\CableCell.cs"              Link="Source/CableCell.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Pipelike\Cable\CableLayer.cs"             Link="Source/CableLayer.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Pipelike\Cable\EnergyNetGraph.cs"         Link="Source/EnergyNetGraph.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Pipelike\Cable\PerTickLongCounter.cs"     Link="Source/PerTickLongCounter.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Pipelike\Cable\AveragingPerTickCounter.cs" Link="Source/AveragingPerTickCounter.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Cover\Filter\TagExprFilter.cs"                        Link="Source/TagExprFilter.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Machine\Multiblock\RepeatableShape.cs"     Link="Source/RepeatableShape.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\TerrariaCompat\Machine\Multiblock\MultiblockShapes.cs"    Link="Source/MultiblockShapes.cs" />
+    <!-- RecipeLookup trie - pure-logic; RecipeLookupTests.cs supplies a GTRecipe stub. -->
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\Either.cs"                Link="Source/Lookup/Either.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\AbstractMapIngredient.cs" Link="Source/Lookup/AbstractMapIngredient.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\Branch.cs"                Link="Source/Lookup/Branch.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\RecipeDB.cs"              Link="Source/Lookup/RecipeDB.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\ItemMapIngredient.cs"     Link="Source/Lookup/ItemMapIngredient.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\FluidMapIngredient.cs"    Link="Source/Lookup/FluidMapIngredient.cs" />
+    <Compile Include="..\..\GregTechCEuTerraria\Api\Recipe\Lookup\CircuitMapIngredient.cs"  Link="Source/Lookup/CircuitMapIngredient.cs" />
+  </ItemGroup>
+</Project>

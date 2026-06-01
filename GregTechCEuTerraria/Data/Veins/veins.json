@@ -1,0 +1,1402 @@
+[
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 80,
+    "heightMin": 10,
+    "id": "apatite_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "apatite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "tricalcium_phosphate",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pyrochlore",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 40,
+    "heightMin": 20,
+    "id": "banded_iron_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "goethite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "yellow_limonite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "hematite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "gold",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.3,
+    "generatorType": "layered",
+    "heightMax": 80,
+    "heightMin": 10,
+    "id": "bauxite_vein_end",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "endstone",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "bauxite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "ilmenite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      },
+      {
+        "materialId": "aluminium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 50,
+    "density": 0.75,
+    "generatorType": "dike",
+    "heightMax": 30,
+    "heightMin": 5,
+    "id": "beryllium_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "beryllium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "emerald",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "thorium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 80,
+    "heightMin": 10,
+    "id": "cassiterite_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "tin",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 4
+      },
+      {
+        "materialId": "cassiterite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 120,
+    "heightMin": 80,
+    "id": "certus_quartz",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "quartzite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "certus_quartz",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "barite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 44,
+    "clusterSizeMin": 38,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 140,
+    "heightMin": 10,
+    "id": "coal_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "coal",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 160,
+    "heightMin": -10,
+    "id": "copper_tin_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "chalcopyrite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 5
+      },
+      {
+        "materialId": "zeolite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "cassiterite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "realgar",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 50
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 10,
+    "heightMin": -40,
+    "id": "copper_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "chalcopyrite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 5
+      },
+      {
+        "materialId": "iron",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pyrite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "copper",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "classic",
+    "heightMax": -30,
+    "heightMin": -55,
+    "id": "diamond_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "graphite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 4
+      },
+      {
+        "materialId": "graphite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "diamond",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "coal",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 45,
+    "heightMin": -15,
+    "id": "galena_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "galena",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "silver",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "lead",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.4,
+    "generatorType": "layered",
+    "heightMax": 60,
+    "heightMin": 30,
+    "id": "garnet_tin_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "cassiterite_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "garnet_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "asbestos",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "diatomite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 50,
+    "density": 0.75,
+    "generatorType": "dike",
+    "heightMax": 50,
+    "heightMin": -10,
+    "id": "garnet_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "red_garnet",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "yellow_garnet",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "amethyst",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "opal",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 60,
+    "heightMin": -10,
+    "id": "iron_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "goethite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 5
+      },
+      {
+        "materialId": "yellow_limonite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "hematite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "malachite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 120
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 0.75,
+    "generatorType": "dike",
+    "heightMax": 10,
+    "heightMin": -60,
+    "id": "lapis_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "lazurite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "sodalite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "lapis",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "calcite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 50,
+    "heightMin": 0,
+    "id": "lubricant_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "soapstone",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "talc",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "glauconite_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pentlandite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 44,
+    "clusterSizeMin": 38,
+    "density": 0.15,
+    "generatorType": "layered",
+    "heightMax": 80,
+    "heightMin": 20,
+    "id": "magnetite_vein_end",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "magnetite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "vanadium_magnetite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "chromite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "gold",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 44,
+    "clusterSizeMin": 38,
+    "density": 0.15,
+    "generatorType": "layered",
+    "heightMax": 60,
+    "heightMin": 10,
+    "id": "magnetite_vein_ow",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "magnetite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "vanadium_magnetite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "gold",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 50,
+    "density": 0.75,
+    "generatorType": "dike",
+    "heightMax": 30,
+    "heightMin": 20,
+    "id": "manganese_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "grossular",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "pyrolusite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "tantalite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 20
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 50,
+    "density": 0.75,
+    "generatorType": "dike",
+    "heightMax": 0,
+    "heightMin": -30,
+    "id": "manganese_vein_ow",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "grossular",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "spessartine",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pyrolusite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "tantalite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 20
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": -10,
+    "heightMin": -40,
+    "id": "mica_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "kyanite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "mica",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "bauxite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pollucite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 20
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 60,
+    "heightMin": 15,
+    "id": "mineral_sand_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "basaltic_mineral_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "granitic_mineral_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "fullers_earth",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "gypsum",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 50,
+    "heightMin": 20,
+    "id": "molybdenum_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "wulfenite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "molybdenite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "molybdenum",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      },
+      {
+        "materialId": "powellite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 5
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 40,
+    "heightMin": 20,
+    "id": "monazite_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "bastnasite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "monazite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      },
+      {
+        "materialId": "neodymium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 80,
+    "clusterSizeMin": 48,
+    "density": 0.25,
+    "generatorType": "cuboid",
+    "heightMax": 90,
+    "heightMin": 10,
+    "id": "naquadah_vein",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "naquadah",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "naquadah",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "naquadah",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "plutonium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 80,
+    "heightMin": 40,
+    "id": "nether_quartz_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "nether_quartz",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "quartzite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 80
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 60,
+    "heightMin": -10,
+    "id": "nickel_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "garnierite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "nickel",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "cobaltite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pentlandite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.3,
+    "generatorType": "layered",
+    "heightMax": 80,
+    "heightMin": 30,
+    "id": "oilsands_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "oilsands",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "oilsands",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "oilsands",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 10,
+    "heightMin": -20,
+    "id": "olivine_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "bentonite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "magnesite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "olivine",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "glauconite_sand",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 20
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "cuboid",
+    "heightMax": 60,
+    "heightMin": 30,
+    "id": "pitchblende_vein_end",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "pitchblende",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "pitchblende",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "pitchblende",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "uraninite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 30
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 40,
+    "heightMin": 5,
+    "id": "redstone_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "redstone",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "ruby",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "cinnabar",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": -10,
+    "heightMin": -65,
+    "id": "redstone_vein_ow",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "redstone",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "ruby",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "cinnabar",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 45,
+    "heightMin": 5,
+    "id": "saltpeter_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "saltpeter",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "diatomite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "electrotine",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "alunite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 40
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 70,
+    "heightMin": 30,
+    "id": "salts_vein",
+    "layer": "STONE",
+    "materials": [
+      {
+        "materialId": "rock_salt",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "salt",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "lepidolite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      },
+      {
+        "materialId": "spodumene",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 50
+  },
+  {
+    "biome": "OVERWORLD",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 0,
+    "heightMin": -40,
+    "id": "sapphire_vein",
+    "layer": "DEEPSLATE",
+    "materials": [
+      {
+        "materialId": "almandine",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "pyrope",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "sapphire",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      },
+      {
+        "materialId": "green_sapphire",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 60
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 64,
+    "clusterSizeMin": 50,
+    "density": 0.7,
+    "generatorType": "dike",
+    "heightMax": 60,
+    "heightMin": 20,
+    "id": "scheelite_vein",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "scheelite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "tungstate",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "lithium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 20
+  },
+  {
+    "biome": "END",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 50,
+    "heightMin": 5,
+    "id": "sheldonite_vein",
+    "layer": "ENDSTONE",
+    "materials": [
+      {
+        "materialId": "bornite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "cooperite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "platinum",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "palladium",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 10
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 40,
+    "clusterSizeMin": 32,
+    "density": 0.2,
+    "generatorType": "layered",
+    "heightMax": 30,
+    "heightMin": 10,
+    "id": "sulfur_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "sulfur",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "pyrite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "sphalerite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 100
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 52,
+    "clusterSizeMin": 40,
+    "density": 1.0,
+    "generatorType": "veined",
+    "heightMax": 120,
+    "heightMin": 80,
+    "id": "tetrahedrite_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "tetrahedrite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 4
+      },
+      {
+        "materialId": "copper",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "stibnite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 70
+  },
+  {
+    "biome": "NETHER",
+    "clusterSizeMax": 29,
+    "clusterSizeMin": 25,
+    "density": 0.25,
+    "generatorType": "layered",
+    "heightMax": 120,
+    "heightMin": 80,
+    "id": "topaz_vein",
+    "layer": "NETHERRACK",
+    "materials": [
+      {
+        "materialId": "blue_topaz",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 3
+      },
+      {
+        "materialId": "topaz",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "chalcocite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 2
+      },
+      {
+        "materialId": "bornite",
+        "sizeMax": 1,
+        "sizeMin": 1,
+        "weight": 1
+      }
+    ],
+    "weight": 70
+  }
+]
