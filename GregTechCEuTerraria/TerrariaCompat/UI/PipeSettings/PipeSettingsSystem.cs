@@ -227,9 +227,14 @@ public sealed class PipeSettingsSystem : ModSystem
 		if (!UILayers.IsAnyHigherPriorityModalOpen(LayerName))
 			_ui.Update(gameTime);
 
-		// Route via WorldHoverTooltip's central "cursor over UI" gate.
+		// Route via WorldHoverTooltip's central "cursor over UI" gate - tooltip
+		// AND the openable-pipe highlight both suppress under a UI panel there.
 		if (_hoverLayer is not null)
+		{
 			WorldHoverTooltip.Set(BuildHoverTooltip(_hoverLayer.Value, _hoverX, _hoverY));
+			if (_hoverHasOpenable)
+				WorldHoverTooltip.SetHighlight(_hoverX, _hoverY, new Color(255, 220, 60, 200));
+		}
 	}
 
 	// Per-layer contents/throughput + stable net id + RMB hint. Per-channel
@@ -389,33 +394,5 @@ public sealed class PipeSettingsSystem : ModSystem
 				return true;
 			});
 
-		// Game-scale layer so the outline aligns with the world tile (no UIScale
-		// division). Inserted before Mouse Text so tooltips draw on top.
-		int mouseTextIdx = layers.FindIndex(l => l.Name == "Vanilla: Mouse Text");
-		int insertAt = mouseTextIdx >= 0 ? mouseTextIdx : layers.Count;
-		layers.Insert(insertAt, new LegacyGameInterfaceLayer(
-			"GregTechCEuTerraria: Pipe Hover Outline",
-			DrawPipeHoverOutline,
-			InterfaceScaleType.Game));
-	}
-
-	private static bool DrawPipeHoverOutline()
-	{
-		if (Main.dedServ || Main.gameMenu || Main.LocalPlayer is null) return true;
-		// Only draw on RMB-openable pipes.
-		if (_hoverLayer is null || !_hoverHasOpenable) return true;
-
-		var sb = Main.spriteBatch;
-		var pixel = Terraria.GameContent.TextureAssets.MagicPixel.Value;
-		var sp = Main.screenPosition;
-
-		var color = new Microsoft.Xna.Framework.Color(255, 220, 60, 200);
-		int rx = (int)System.Math.Round(_hoverX * 16f - sp.X);
-		int ry = (int)System.Math.Round(_hoverY * 16f - sp.Y);
-		sb.Draw(pixel, new Microsoft.Xna.Framework.Rectangle(rx,      ry,      16, 1), color);
-		sb.Draw(pixel, new Microsoft.Xna.Framework.Rectangle(rx,      ry + 15, 16, 1), color);
-		sb.Draw(pixel, new Microsoft.Xna.Framework.Rectangle(rx,      ry,      1, 16), color);
-		sb.Draw(pixel, new Microsoft.Xna.Framework.Rectangle(rx + 15, ry,      1, 16), color);
-		return true;
 	}
 }

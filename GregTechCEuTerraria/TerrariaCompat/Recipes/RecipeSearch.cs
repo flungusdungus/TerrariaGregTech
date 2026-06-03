@@ -19,7 +19,7 @@ public static class RecipeSearch
 	private static readonly Dictionary<GTRecipe, string> _textCache = new();
 	private static readonly Dictionary<GTRecipe, string> _outputTextCache = new();
 
-	public static void ClearCache() { _textCache.Clear(); _outputTextCache.Clear(); }
+	public static void ClearCache() { _textCache.Clear(); _outputTextCache.Clear(); _stationLowerCache.Clear(); }
 
 	// Pre-warm at world load so the first keystroke doesn't stutter (lazy
 	// TextFor does Item.SetDefaults per ingredient x ~33k recipes).
@@ -51,7 +51,9 @@ public static class RecipeSearch
 	{
 		if (tokens.Length == 0) return true;
 		string text = TextFor(recipe);
-		string station = recipe.RecipeType.RegistryName.ToLowerInvariant();
+		// Lazily resolved only when an `@station` token is actually present -
+		// the common (no-@) path must not allocate per recipe per keystroke.
+		string? station = null;
 		foreach (string token in tokens)
 		{
 			if (token.Length == 0) continue;
@@ -68,6 +70,7 @@ public static class RecipeSearch
 					if (!HasUnresolvedIngredient(recipe)) return false;
 					continue;
 				}
+				station ??= StationLower(recipe.RecipeType);
 				if (!station.Contains(needle, System.StringComparison.OrdinalIgnoreCase)) return false;
 				continue;
 			}
@@ -75,6 +78,15 @@ public static class RecipeSearch
 			if (!text.Contains(token)) return false;
 		}
 		return true;
+	}
+
+	private static readonly Dictionary<GTRecipeType, string> _stationLowerCache = new();
+	private static string StationLower(GTRecipeType type)
+	{
+		if (_stationLowerCache.TryGetValue(type, out var s)) return s;
+		s = type.RegistryName.ToLowerInvariant();
+		_stationLowerCache[type] = s;
+		return s;
 	}
 
 	public static string[] Tokenize(string query)
@@ -106,14 +118,6 @@ public static class RecipeSearch
 	{
 		if (_outputTextCache.TryGetValue(recipe, out var cached)) return cached;
 
-		// Deliberately NOT including the recipe id here. The id's recipe-name
-		// part (e.g. `macerate_iron_ingot` left after stripping the station
-		// prefix) frequently mentions the station's subject, which leaks
-		// "macerator" into the output text of every macerator-station recipe
-		// even when the actual outputs are iron dust / etc. That defeats the
-		// outputs-first sort (TextFor still indexes the id, so general search
-		// finds these recipes - they just rank below the ones whose real
-		// OUTPUT is a macerator).
 		var sb = new StringBuilder();
 		AppendContents(sb, recipe.GetOutputContents(ItemRecipeCapability.CAP), isFluid: false);
 		AppendContents(sb, recipe.GetOutputContents(FluidRecipeCapability.CAP), isFluid: true);
@@ -169,10 +173,7 @@ public static class RecipeSearch
 				break;
 
 			// IntCircuitIngredient (the programmed-circuit recipe selector) is
-			// deliberately NOT indexed: it appears in a huge fraction of
-			// machine recipes, so including "circuit" here made the token
-			// match almost everything. Real circuit ITEMS still match via
-			// their item name / id.
+			// deliberately NOT indexed
 			case IntCircuitIngredient:
 				break;
 

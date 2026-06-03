@@ -42,6 +42,7 @@ public static class LootRegistry
 		public readonly int TargetItem;
 		public readonly string Detail;
 		public readonly string SearchText;
+		public readonly string TargetNameLower;
 
 		public LootEntry(LootKind kind, string sourceLabel, int sourceIconItem,
 			int targetItem, string detail, string searchText,
@@ -56,6 +57,7 @@ public static class LootRegistry
 			TargetItem = targetItem;
 			Detail = detail;
 			SearchText = searchText;
+			TargetNameLower = ItemName(targetItem).ToLowerInvariant();
 		}
 	}
 
@@ -350,7 +352,7 @@ public static class LootRegistry
 	public static bool MatchesTarget(in LootEntry entry, string[] tokens)
 	{
 		if (tokens.Length == 0) return true;
-		string name = ItemName(entry.TargetItem).ToLowerInvariant();
+		string name = entry.TargetNameLower;
 		foreach (var t in tokens)
 		{
 			if (t.Length == 0 || t[0] == '@') continue;

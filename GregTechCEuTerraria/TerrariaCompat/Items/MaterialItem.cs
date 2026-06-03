@@ -84,6 +84,22 @@ public sealed class MaterialItem : ModItem, ITextureWarmUp
 		}
 	}
 
+	// Upstream TooltipsHandler.appendTooltips: chemical formula as a yellow
+	// literal inserted at index 1 (just below the item name).
+	public override void ModifyTooltips(List<TooltipLine> tooltips)
+	{
+		base.ModifyTooltips(tooltips);
+		string? formula = _material?.Formula;
+		if (string.IsNullOrEmpty(formula)) return;
+		var line = new TooltipLine(Mod, "ChemicalFormula", formula)
+		{
+			OverrideColor = new Color(255, 255, 85), // ChatFormatting.YELLOW
+		};
+		int nameIdx = tooltips.FindIndex(t => t.Mod == "Terraria" && t.Name == "ItemName");
+		if (nameIdx >= 0) tooltips.Insert(nameIdx + 1, line);
+		else tooltips.Add(line);
+	}
+
 	public override void HoldItem(Player player)
 	{
 		base.HoldItem(player);

@@ -461,8 +461,10 @@ public abstract class MetaMachine : ModTileEntity, ITickSubscription, ICoverable
 	public CoverBehavior? GetCoverAtSide(CoverSide side) => _covers[(int)side];
 	public void SetCoverAtSide(CoverBehavior? cover, CoverSide side) => _covers[(int)side] = cover;
 
+	public virtual bool SupportsCovers => true;
+
 	// Per-cover / per-side gating (e.g. solar top-only) lives on CoverBehavior.CanAttach.
-	public virtual bool CanPlaceCoverOnSide(CoverDefinition definition, CoverSide side) => true;
+	public virtual bool CanPlaceCoverOnSide(CoverDefinition definition, CoverSide side) => SupportsCovers;
 
 	// Covers are UI-only; runtime edits ride their own packet, no-op here.
 	public void NotifyBlockUpdate() { }

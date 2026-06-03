@@ -110,11 +110,12 @@ public sealed record ToggleButtonWidgetSpec(int X, int Y, string IconAssetPath, 
 public sealed record SlotWidgetSpec(int X, int Y, SlotGroup Group, int SlotIndex,
 	int Context = Terraria.UI.ItemSlot.Context.ChestItem,
 	Func<bool>? IsBlocked = null,
-	string? EmptyOverlayAsset = null)
+	string? EmptyOverlayAsset = null,
+	Func<bool>? Invalid = null)
 	: WidgetSpec(X, Y)
 {
 	public override UIElement Create(MetaMachine entity) =>
-		new UISlot(entity, Group, SlotIndex, Context, IsBlocked, EmptyOverlayAsset);
+		new UISlot(entity, Group, SlotIndex, Context, IsBlocked, EmptyOverlayAsset, Invalid);
 }
 
 public sealed record ProgressArrowWidgetSpec(int X, int Y, Func<float> Progress, string AssetPath = "GregTechCEuTerraria/Content/Textures/gui/progress_bar/progress_bar_arrow")

@@ -26,3 +26,5 @@ License: LGPL-3.0-or-later
 Credits: GregTech Modern Community Pack (questbook content)
 Source: https://github.com/GregTechCEu/GregTech-Modern-Community-Pack
 License: LGPL-2.1
+
+AI Usage: Claude was used to speed up the porting process, of course. Theres no fun in manually rewriting stuff line by line, and the existing AST-based java->c# porters are too dumb for such a complex thing. So be aware there still will be stupid unexpected game breaking bugs, play at your own caution

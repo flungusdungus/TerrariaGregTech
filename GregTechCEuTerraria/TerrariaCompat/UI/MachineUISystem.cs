@@ -76,6 +76,8 @@ public sealed class MachineUISystem : ModSystem
 		}
 	}
 
+	public static bool IsOccludedByHigherModal => UILayers.IsAnyHigherPriorityModalOpen(LayerName);
+
 	// Used by ModPlayer.ShiftClickSlot to route shift-clicks into the open
 	// machine's input slots (vanilla chest parity).
 	public static MetaMachine? CurrentEntity

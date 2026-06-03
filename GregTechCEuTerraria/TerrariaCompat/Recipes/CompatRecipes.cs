@@ -18,17 +18,20 @@ namespace GregTechCEuTerraria.TerrariaCompat.Recipes;
 // that need a vanilla RecipeGroup live in VanillaCraftingBridgeSystem instead.
 public static class CompatRecipes
 {
-	// Bundle ids skipped by RecipeJsonLoader; each MUST be replaced by an entry
-	// in `Json` below. Together they form one "override upstream with a tuned
-	// variant" edit, survives snapshot-recipes.py reruns.
 	public static readonly System.Collections.Generic.HashSet<string> OverriddenIds = new()
 	{
+		// --- Overrides (replaced in Json below) ---
 		// Steam miners + LP steam macerator - upstream uses 2x diamond corners;
 		// diamonds are scarcer in Terraria's steam age, so swap for tier-matched
 		// rods. HP steam_macerator has no diamond corners and isn't overridden.
 		"shaped/steam_miner_bronze",
 		"shaped/steam_miner_steel",
 		"shaped/steam_macerator_bronze",
+
+		// --- Pure drops (no replacement) ---
+		"cutter/cut_stone_into_slab",
+		"cutter/cut_stone_into_slab_water",
+		"cutter/cut_stone_into_slab_distilled_water",
 	};
 
 
@@ -50,8 +53,83 @@ public static class CompatRecipes
 	//   never wired. lv_machine_hull needs wrought-iron plates, so without this
 	//   the bootstrap loop is broken. Mirrors the mechanic setSmeltingInto was
 	//   designed to express.
+	//
+	// - compat_{ulv,lv}_{input,output}_{hatch,bus} - hand-craftable ULV/LV
+	//   multiblock hatches + buses.
 	private const string Json = """
 	[
+	  { "id": "crafting_shaped/compat_ulv_input_hatch", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:ulv_machine_hull" } },
+	      { "content": { "tag": "forge:glass" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:ulv_input_hatch" } } ] } },
+
+	  { "id": "crafting_shaped/compat_ulv_output_hatch", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:ulv_machine_hull" } },
+	      { "content": { "tag": "forge:glass" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:ulv_output_hatch" } } ] } },
+
+	  { "id": "crafting_shaped/compat_lv_input_hatch", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:lv_machine_hull" } },
+	      { "content": { "item": "gtceu:wood_drum" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:lv_input_hatch" } } ] } },
+
+	  { "id": "crafting_shaped/compat_lv_output_hatch", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:lv_machine_hull" } },
+	      { "content": { "item": "gtceu:wood_drum" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:lv_output_hatch" } } ] } },
+
+	  { "id": "crafting_shaped/compat_ulv_input_bus", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:ulv_machine_hull" } },
+	      { "content": { "tag": "forge:chests/wooden" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:ulv_input_bus" } } ] } },
+
+	  { "id": "crafting_shaped/compat_ulv_output_bus", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:ulv_machine_hull" } },
+	      { "content": { "tag": "forge:chests/wooden" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:ulv_output_bus" } } ] } },
+
+	  { "id": "crafting_shaped/compat_lv_input_bus", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:lv_machine_hull" } },
+	      { "content": { "item": "gtceu:wood_crate" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:lv_input_bus" } } ] } },
+
+	  { "id": "crafting_shaped/compat_lv_output_bus", "type": "minecraft:crafting_shaped",
+	    "inputs":  { "item": [
+	      { "content": { "item": "gtceu:lv_machine_hull" } },
+	      { "content": { "item": "gtceu:wood_crate" } },
+	      { "content": { "type": "gtceu:sized", "count": 2,
+	        "ingredient": { "item": "gtceu:rubber_ingot" } } }
+	    ] },
+	    "outputs": { "item": [ { "content": { "item": "gtceu:lv_output_bus" } } ] } },
+
 	  { "id": "steam_boiler/compat_wood", "type": "gtceu:steam_boiler", "duration": 300,
 	    "inputs": { "item": [ { "content": { "type": "gtceu:sized", "count": 1,
 	      "ingredient": { "tag": "minecraft:logs" } } } ] } },

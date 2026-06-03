@@ -27,6 +27,7 @@ public interface IMachineTextureSpec
 	// Multi-controller appearance casing (heatproof / watertight / etc.);
 	// mirrors upstream workableCasingModel(appearance, overlay). null = tier default.
 	string? CustomCasingTexturePath { get => null; }
+	string? CustomFaceAssetPath { get => null; }
 }
 
 // Non-generic surface for MachinePlacedPacket (server only has the tile type).
@@ -153,6 +154,7 @@ public abstract class MetaMachineTile : ModTile, IMachineTextureSpec, IMetaMachi
 	public virtual string TintedOverlayBasename   => "";
 	public virtual string EmissiveOverlayBasename => "";
 	public virtual string? CustomCasingTexturePath => null;
+	public virtual string? CustomFaceAssetPath => null;
 	protected virtual Common.Energy.VoltageTier TileTier => Common.Energy.VoltageTier.LV;
 
 	public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)

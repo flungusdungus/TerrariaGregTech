@@ -85,6 +85,8 @@ public sealed class MachineDefinition
 	public string        TintedOverlayBasename   { get; init; } = "";
 	public string        EmissiveOverlayBasename { get; init; } = "";
 
+	public string? CustomFaceAssetPath { get; init; }
+
 	public string LayoutKey { get; init; } = "generic";
 
 	// Closure so dynamic per-controller patterns + tiered multis work.

@@ -21,7 +21,6 @@ public sealed class UITextButton : UIElement
 	private readonly Action? _onLeft;
 	private readonly Action? _onRight;
 	private readonly string? _tooltip;
-	private bool _leftDown, _rightDown;
 
 	// Optional radio-group highlight - when set + returns true, the button
 	// renders with the yellow border + green-tinted bg shared with
@@ -101,26 +100,24 @@ public sealed class UITextButton : UIElement
 			Main.LocalPlayer.mouseInterface = true;
 			string? tt = disabled ? (DisabledTooltip ?? _tooltip) : _tooltip;
 			if (tt != null) Main.instance.MouseText(tt);
-			if (!disabled) HandleClicks();
 		}
-
-		// Track press edges unconditionally so a click that started off the
-		// button doesn't fire on the frame the cursor moves onto it.
-		_leftDown = Main.mouseLeft;
-		_rightDown = Main.mouseRight;
 	}
 
-	private void HandleClicks()
+	public override void LeftMouseDown(UIMouseEvent evt)
 	{
-		if (Main.mouseLeft && !_leftDown && _onLeft != null)
-		{
-			_onLeft();
-			SoundEngine.PlaySound(SoundID.MenuTick);
-		}
-		if (Main.mouseRight && !_rightDown && _onRight != null)
-		{
-			_onRight();
-			SoundEngine.PlaySound(SoundID.MenuTick);
-		}
+		base.LeftMouseDown(evt);
+		if (IsVisible?.Invoke() == false || IsDisabled?.Invoke() == true) return;
+		if (_onLeft is null) return;
+		_onLeft();
+		SoundEngine.PlaySound(SoundID.MenuTick);
+	}
+
+	public override void RightMouseDown(UIMouseEvent evt)
+	{
+		base.RightMouseDown(evt);
+		if (IsVisible?.Invoke() == false || IsDisabled?.Invoke() == true) return;
+		if (_onRight is null) return;
+		_onRight();
+		SoundEngine.PlaySound(SoundID.MenuTick);
 	}
 }

@@ -65,6 +65,7 @@ public class TieredMachineTile : MetaMachineTile
 	public override string PipeOverlayBasename     => _def!.PipeOverlayBasename;
 	public override string TintedOverlayBasename   => _def!.TintedOverlayBasename;
 	public override string EmissiveOverlayBasename => _def!.EmissiveOverlayBasename;
+	public override string? CustomFaceAssetPath => _def!.CustomFaceAssetPath;
 	protected override VoltageTier TileTier => _tier;
 
 	// Multi appearance-casing - matches upstream workableCasingModel(appearance, overlay).
@@ -74,8 +75,6 @@ public class TieredMachineTile : MetaMachineTile
 		{
 			var name = _def?.FusedCasingTileName;
 			if (string.IsNullOrEmpty(name)) return null;
-			// Mod.TryFind<CasingTile> returns false here; use base ModTile +
-			// TileLoader.GetTile cast (same as MultiblockControllerMachine.FusedCasingTexture).
 			var mod = Terraria.ModLoader.ModLoader.GetMod("GregTechCEuTerraria");
 			if (!mod.TryFind<Terraria.ModLoader.ModTile>(name, out var tile)) return null;
 			return Terraria.ModLoader.TileLoader.GetTile(tile.Type) is Tiles.Casings.CasingTile casing

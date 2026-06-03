@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using GregTechCEuTerraria.Api.Fluids;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,6 +28,8 @@ public sealed class UIFavoritesPanel : UITerrariaPanel
 	private int _scroll;
 	private bool _leftDown;
 	private bool _rightDown;
+
+	public Func<bool>? IsOccluded;
 
 	public UIFavoritesPanel()
 	{
@@ -75,9 +78,11 @@ public sealed class UIFavoritesPanel : UITerrariaPanel
 		int maxScroll = System.Math.Max(0, totalRows * rowH - viewH);
 		if (_scroll > maxScroll) _scroll = maxScroll;
 
+		bool occluded = IsOccluded?.Invoke() ?? false;
+
 		var mouse = new Point((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y);
-		bool inside = content.Contains(mouse);
-		if (IsMouseHovering)
+		bool inside = !occluded && content.Contains(mouse);
+		if (IsMouseHovering && !occluded)
 		{
 			Main.LocalPlayer.mouseInterface = true;
 			PlayerInput.LockVanillaMouseScroll("GregTechCEuTerraria/FavoritesPanel");

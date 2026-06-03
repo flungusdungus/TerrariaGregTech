@@ -106,13 +106,12 @@ public abstract class SteamBoilerMachine : SteamWorkableMachine
 		TickAutoOutput();
 	}
 
-	private uint OffsetTimer => (uint)(Main.GameUpdateCount + (uint)(Position.X * 7 + Position.Y * 13));
-
 	protected void UpdateCurrentTemperature()
 	{
+		long timer = GetMcOffsetTimer();
 		if (IsHeating())
 		{
-			if (OffsetTimer % global::GregTechCEuTerraria.Api.TickScale.FromMcTicks(12) == 0)
+			if (timer % 12 == 0)
 			{
 				if (CurrentTemperature < GetMaxTemperature())
 				{
@@ -120,7 +119,7 @@ public abstract class SteamBoilerMachine : SteamWorkableMachine
 					{
 						CurrentTemperature++;
 					}
-					else if (OffsetTimer % global::GregTechCEuTerraria.Api.TickScale.FromMcTicks(24) == 0)
+					else if (timer % 24 == 0)
 					{
 						CurrentTemperature++;
 					}
@@ -137,7 +136,7 @@ public abstract class SteamBoilerMachine : SteamWorkableMachine
 		}
 		else --TimeBeforeCoolingDown;
 
-		if (OffsetTimer % global::GregTechCEuTerraria.Api.TickScale.FromMcTicks(10) == 0)
+		if (timer % 10 == 0)
 		{
 			if (CurrentTemperature >= 100)
 			{

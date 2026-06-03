@@ -39,16 +39,14 @@ public static class NativeRecipeProxy
 	private const int CraftingTier = -1;
 	private static readonly Dictionary<int, (string Station, int Tier)> TileToStation = new()
 	{
-		// Furnaces - vanilla iron/lead/copper/silver/gold bars etc.
 		{ TileID.Furnaces,        ("electric_furnace", 0) },   // ULV
 		{ TileID.Hellforge,       ("electric_furnace", 2) },   // MV
 		{ TileID.AdamantiteForge, ("electric_furnace", 4) },   // EV
 		{ TileID.LihzahrdFurnace, ("electric_furnace", 6) },   // LuV
-		// Specialist hotforges -> best GT analogue.
 		{ TileID.GlassKiln,       ("arc_furnace",      1) },   // LV
 		{ TileID.BoneWelder,      ("forming_press",    1) },   // LV
 		{ TileID.HoneyDispenser,  ("canner",           2) },   // MV
-		// Workbench + hand-only (via no-tile branch).
+		{ TileID.DemonAltar,      ("circuit_assembler", 1) },  // LV
 		{ TileID.WorkBenches,     ("crafting_shapeless", CraftingTier) },
 	};
 

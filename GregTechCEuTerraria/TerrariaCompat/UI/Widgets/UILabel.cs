@@ -22,6 +22,9 @@ public sealed class UILabel : UIElement
 		Height = StyleDimension.FromPixels(16);
 	}
 
+	// Display-only - never capture the mouse (see UIDynamicLabel).
+	public override bool ContainsPoint(Vector2 point) => false;
+
 	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
 		var b = GetDimensions();

@@ -159,6 +159,9 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 	{
 		EnsureTraits();
 
+		if (!_hasWater || GetMcOffsetTimer() % MaxProgress == 0L)
+			UpdateHasWater();
+
 		// updateFishingUpdateSubscription gate (java:179) - energy + bait + enabled.
 		// Bait filter runs on Insert, so any non-air bait stack is valid.
 		bool canFish = DrainEnergy(simulate: true)
@@ -173,11 +176,6 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 			}
 			return;
 		}
-
-		// Re-check water every maxProgress ticks (java:205).
-		long offsetTimer = Main.GameUpdateCount + (uint)(Position.X * 7 + Position.Y * 13);
-		if (offsetTimer % MaxProgress == 0L)
-			UpdateHasWater();
 
 		if (!_hasWater)
 		{
@@ -198,31 +196,29 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 		_progress++;
 	}
 
-	// 5x5 scan centred horizontally on the machine, in the row below it.
+	// DEVIATION from upstream's 5x5-plane all-water requirement (java:191): we just check water below the fisher
 	private void UpdateHasWater()
 	{
-		int cx = Position.X + 1;
+		int left  = Position.X;
+		int right = Position.X + Size.Width - 1;
 		int baseY = Position.Y + Size.Height;
-		int half = WaterCheckSize / 2;
 
-		for (int dx = 0; dx < WaterCheckSize; dx++)
+		for (int dy = 0; dy < WaterCheckSize; dy++)
 		{
-			int tileX = cx + (dx - half);
-			int tileY = baseY;
-			// Out-of-world counts as no-water.
-			if (tileX < 0 || tileX >= Main.maxTilesX || tileY < 0 || tileY >= Main.maxTilesY)
+			int tileY = baseY + dy;
+			if (tileY < 0 || tileY >= Main.maxTilesY) break;
+			for (int x = left; x <= right; x++)
 			{
-				_hasWater = false;
-				return;
-			}
-			var t = Main.tile[tileX, tileY];
-			if (t.LiquidAmount == 0 || t.LiquidType != LiquidID.Water)
-			{
-				_hasWater = false;
-				return;
+				if (x < 0 || x >= Main.maxTilesX) continue;
+				var t = Main.tile[x, tileY];
+				if (t.LiquidAmount > 0 && t.LiquidType == LiquidID.Water)
+				{
+					_hasWater = true;
+					return;
+				}
 			}
 		}
-		_hasWater = true;
+		_hasWater = false;
 	}
 
 	// roll loot, deposit into cache, consume bait (java:204-246).
@@ -283,6 +279,7 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 		base.SaveData(tag);   // Energy trait + ChargerSlot via TieredEnergyMachine
 		tag["progress"]          = _progress;
 		tag["active"]            = _active;
+		tag["hasWater"]          = _hasWater;
 		tag["isWorkingEnabled"]  = _isWorkingEnabled;
 		tag["junkEnabled"]       = _junkEnabled;
 	}
@@ -293,6 +290,7 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 		base.LoadData(tag);
 		_progress         = tag.GetInt("progress");
 		_active           = tag.GetBool("active");
+		_hasWater         = tag.GetBool("hasWater");
 		_isWorkingEnabled = !tag.ContainsKey("isWorkingEnabled") || tag.GetBool("isWorkingEnabled");
 		_junkEnabled      = !tag.ContainsKey("junkEnabled") || tag.GetBool("junkEnabled");
 	}
@@ -301,15 +299,19 @@ public sealed class FisherMachine : TieredEnergyMachine, IWorkable, IControllabl
 	{
 		base.AppendTooltip(lines);
 		lines.Add($"Speed: {MaxProgress} ticks / catch");
-		lines.Add($"Water needed: {WaterCheckSize}x{WaterCheckSize} below");
+		lines.Add("Water needed: below the machine");
 		lines.Add($"Draw: {EnergyPerTick:N0} EU/t");
 		lines.Add($"Fishing Power: {FishingLootRoller.FishingPower(Tier)}");
 		lines.Add($"Luck: +{FishingLootRoller.SyntheticLuck(Tier):0.00}");
 		if (_active)
 			lines.Add($"Progress: {_progress} / {MaxProgress}");
-		else if (!_hasWater)
-			lines.Add("Idle: no water below");
 		else if (!_isWorkingEnabled)
 			lines.Add("Disabled");
+		else if (!_hasWater)
+			lines.Add("Idle: no water below");
+		else if (BaitHandler.Storage.GetStackInSlot(0).IsAir)
+			lines.Add("Idle: no bait (string / worm / etc.)");
+		else if (!DrainEnergy(simulate: true))
+			lines.Add("Idle: not enough power");
 	}
 }

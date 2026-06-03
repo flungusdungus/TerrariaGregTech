@@ -29,6 +29,7 @@ public static class MachineStateSyncPacket
 	public static void Broadcast(MetaMachine machine)
 	{
 		if (Main.netMode != Terraria.ID.NetmodeID.Server) return;
+		machine.LastBroadcastBlob = null;
 		if (machine.ViewerCount == 0) return;
 		byte[] blob = SerializeOnce(machine);
 		foreach (int viewer in machine.Viewers)

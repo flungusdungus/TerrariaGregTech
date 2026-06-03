@@ -283,6 +283,12 @@ public static class MachineRenderer
 	{
 		Color[]? result = null;
 
+		if (overrideCasingFace == null && !string.IsNullOrEmpty(spec.CustomFaceAssetPath))
+		{
+			var customPx = ReadFaceResampled(LoadOptional(spec.CustomFaceAssetPath!));
+			if (customPx is not null) return customPx;
+		}
+
 		if (overrideCasingFace != null)
 		{
 			// Fused-casing path - caller supplied the face (cleanroom->plascrete).

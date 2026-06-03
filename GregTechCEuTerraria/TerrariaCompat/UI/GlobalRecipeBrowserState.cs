@@ -200,8 +200,9 @@ public sealed class GlobalRecipeBrowserState : UIState
 	// size after any resolution / UI-scale change.
 	private void BuildLayout()
 	{
-		// Preserve the live search text across a rebuild (resolution change
-		// while the browser is open); empty string on the first build.
+		UIItemGrid.WarmVanillaItemTextures();
+
+
 		string preservedQuery = _search?.Text ?? "";
 		RemoveAllChildren();
 
@@ -702,9 +703,9 @@ public sealed class GlobalRecipeBrowserState : UIState
 		Dictionary<int, int>? inv  = _haveOnly ? BuildInventoryCounts() : null;
 		Dictionary<string, int>? fluids = _haveOnly ? BuildFluidCounts() : null;
 
+		_filtered.Clear();
 		if (needFilter)
 		{
-			_filtered = new List<GTRecipe>(_all.Count);
 			foreach (var r in _all)
 			{
 				if (_hideObvious && IsObviousRecipe(r)) continue;
@@ -716,9 +717,7 @@ public sealed class GlobalRecipeBrowserState : UIState
 		}
 		else
 		{
-			// No filter - shallow-copy so we still sort (craftable-on-top) without
-			// mutating _all (the unsorted master list).
-			_filtered = new List<GTRecipe>(_all);
+			_filtered.AddRange(_all);
 		}
 
 		// Two-key stable sort - see SortByRank. Skipped under Have-ingredients
@@ -738,9 +737,10 @@ public sealed class GlobalRecipeBrowserState : UIState
 	// Either key collapses to 0 when not applicable.
 	private const int OutputsMissBit = 1 << 16;
 	private const int MissingMask    = 0xFFFF;
-	// Stable O(n log n) - packs (rank << 32) | originalIndex into a long so
-	// Array.Sort is effectively stable. Replaces a prior O(n^2) insertion sort
-	// that tanked responsiveness on the no-filter ~32k recipe view.
+
+	private static long[]     _sortKeys  = System.Array.Empty<long>();
+	private static GTRecipe[] _sortItems = System.Array.Empty<GTRecipe>();
+
 	private static void SortByRank(List<GTRecipe> list, string[] tokens,
 		bool useCraftableKey,
 		Dictionary<int, int> inv,
@@ -750,8 +750,13 @@ public sealed class GlobalRecipeBrowserState : UIState
 		int n = list.Count;
 		if (n <= 1) return;
 
-		var keys  = new long[n];
-		var items = new GTRecipe[n];
+		if (_sortKeys.Length < n)
+		{
+			_sortKeys  = new long[n];
+			_sortItems = new GTRecipe[n];
+		}
+		var keys  = _sortKeys;
+		var items = _sortItems;
 		for (int i = 0; i < n; i++)
 		{
 			var r = list[i];
@@ -766,7 +771,7 @@ public sealed class GlobalRecipeBrowserState : UIState
 			}
 			keys[i] = ((long)rank << 32) | (uint)i;
 		}
-		System.Array.Sort(keys, items);
+		System.Array.Sort(keys, items, 0, n);
 		list.Clear();
 		for (int i = 0; i < n; i++) list.Add(items[i]);
 	}
@@ -1043,34 +1048,74 @@ public sealed class GlobalRecipeBrowserState : UIState
 
 	private void RefilterItems(string text)
 	{
-		if (_allItems is null)
-		{
-			_allItems = new List<int>(ContentSamples.ItemsByType.Count);
-			foreach (var kv in ContentSamples.ItemsByType)
-				if (kv.Key > 0 && kv.Value != null) _allItems.Add(kv.Key);
-			_allItems.Sort();
-		}
-		string needle = (text ?? string.Empty).Trim();
+		var allItems = EnsureItemUniverse();
+		string needle = (text ?? string.Empty).Trim().ToLowerInvariant();
 		bool needText = needle.Length > 0;
 		bool needMod  = _hiddenMods.Count > 0;
+		// Reuse the list instance (closure re-reads the field); Clear keeps capacity.
+		_filteredItems.Clear();
 		if (!needText && !needMod)
 		{
-			_filteredItems = new List<int>(_allItems);
+			_filteredItems.AddRange(allItems);
 			return;
 		}
-		_filteredItems = new List<int>(System.Math.Min(_allItems.Count, 512));
-		foreach (int type in _allItems)
+		foreach (int type in allItems)
 		{
 			if (needMod && _hiddenMods.Contains(ItemModName(type))) continue;
 			if (needText)
 			{
-				var sample = ContentSamples.ItemsByType[type];
-				string name = sample.Name ?? string.Empty;
-				if (name.Length == 0 || name.IndexOf(needle, System.StringComparison.OrdinalIgnoreCase) < 0)
-					continue;
+				string name = ItemNameLower(type);
+				if (name.Length == 0 || !name.Contains(needle)) continue;
 			}
 			_filteredItems.Add(type);
 		}
+	}
+
+	private static readonly Dictionary<int, string> _itemNameLowerCache = new();
+
+	private List<int> EnsureItemUniverse()
+	{
+		if (_allItems is not null) return _allItems;
+		_allItems = new List<int>(ContentSamples.ItemsByType.Count);
+		foreach (var kv in ContentSamples.ItemsByType)
+			if (kv.Key > 0 && kv.Value != null) _allItems.Add(kv.Key);
+		_allItems.Sort();
+		return _allItems;
+	}
+
+	private List<int> EnsureEquippableUniverse()
+	{
+		if (_allEquippable is not null) return _allEquippable;
+		_allEquippable = new List<int>();
+		foreach (var kv in ContentSamples.ItemsByType)
+			if (kv.Key > 0 && kv.Value is not null && EquipCatOf(kv.Key) != EquipCat.None)
+				_allEquippable.Add(kv.Key);
+		_allEquippable.Sort();
+		return _allEquippable;
+	}
+
+	public void Warm()
+	{
+		EnsureItemUniverse();
+		EnsureEquippableUniverse();
+		WarmItemNames();
+	}
+
+	private static void WarmItemNames()
+	{
+		foreach (var kv in ContentSamples.ItemsByType)
+			if (kv.Key > 0 && kv.Value is not null)
+				ItemNameLower(kv.Key);
+	}
+
+	private static string ItemNameLower(int type)
+	{
+		if (_itemNameLowerCache.TryGetValue(type, out var s)) return s;
+		string? name = ContentSamples.ItemsByType.TryGetValue(type, out var it) && it is not null
+			? it.Name : null;
+		s = (name ?? string.Empty).ToLowerInvariant();
+		_itemNameLowerCache[type] = s;
+		return s;
 	}
 
 	// Classifies an item into equipment categories. Bounds-guards each lookup
@@ -1107,20 +1152,13 @@ public sealed class GlobalRecipeBrowserState : UIState
 
 	private void RefilterEquippable(string text)
 	{
-		if (_allEquippable is null)
-		{
-			_allEquippable = new List<int>();
-			foreach (var kv in ContentSamples.ItemsByType)
-				if (kv.Key > 0 && kv.Value is not null && EquipCatOf(kv.Key) != EquipCat.None)
-					_allEquippable.Add(kv.Key);
-			_allEquippable.Sort();
-		}
-		string needle = (text ?? string.Empty).Trim();
+		var allEquip = EnsureEquippableUniverse();
+		string needle = (text ?? string.Empty).Trim().ToLowerInvariant();
 		bool needText = needle.Length > 0;
 		bool needMod  = _hiddenMods.Count > 0;
 		var hidden    = _hiddenEquip;
-		_filteredEquippable = new List<int>(System.Math.Min(_allEquippable.Count, 512));
-		foreach (int type in _allEquippable)
+		_filteredEquippable.Clear();
+		foreach (int type in allEquip)
 		{
 			// Hide only when every category the item belongs to is hidden, so
 			// an item in both a hidden + un-hidden category stays.
@@ -1129,10 +1167,8 @@ public sealed class GlobalRecipeBrowserState : UIState
 			if (needMod && _hiddenMods.Contains(ItemModName(type))) continue;
 			if (needText)
 			{
-				var sample = ContentSamples.ItemsByType[type];
-				string name = sample.Name ?? string.Empty;
-				if (name.Length == 0 || name.IndexOf(needle, System.StringComparison.OrdinalIgnoreCase) < 0)
-					continue;
+				string name = ItemNameLower(type);
+				if (name.Length == 0 || !name.Contains(needle)) continue;
 			}
 			_filteredEquippable.Add(type);
 		}

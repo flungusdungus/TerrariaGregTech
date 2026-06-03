@@ -25,7 +25,9 @@ namespace GregTechCEuTerraria.TerrariaCompat.Machine.Multiblock;
 // queue (gated Update() walk substitutes), getPartAppearance, @SyncToClient
 // (rides MachineStateSync). Verbatim: OnStructureFormed/Invalid lifecycle,
 // part list rebuild, CheckPattern lock (Monitor instead of ReentrantLock),
-// AsyncCheckPattern offset formula.
+// AsyncCheckPattern unformed-poll offset formula. Formed multis are NOT polled
+// (upstream removes them from the async queue); MultiblockNeighborWatcher
+// re-validates them on a footprint block-change event instead.
 public abstract class MultiblockControllerMachine : MetaMachine
 {
 	private MultiblockState? _multiblockState;
@@ -83,6 +85,21 @@ public abstract class MultiblockControllerMachine : MetaMachine
 	// Per-position hash (deterministic - MP server/client consistency).
 	private int _offset = -1;
 
+	// Neighbor-event invalidation (replaces the formed-multi poll): the watcher sets
+	// _structureNeighborDirty on a footprint-tile change; AsyncCheckPattern re-checks next tick.
+	private bool _structureNeighborDirty;
+	private HashSet<(int x, int y)>? _footprintCells;
+	private static readonly HashSet<MultiblockControllerMachine> _formedControllers = new();
+
+	internal static void MarkStructureNeighborChanged(int x, int y)
+	{
+		foreach (var c in _formedControllers)
+			if (c._footprintCells is { } cells && cells.Contains((x, y)))
+				c._structureNeighborDirty = true;
+	}
+
+	internal static void ClearFootprintRegistry() => _formedControllers.Clear();
+
 	// MP clients can't run AsyncCheckPattern; PatternError isn't NBT-serializable,
 	// so we capture resolved strings + the offending-cell coords + swap-hint
 	// candidate item types here so the ghost-render hover still works on clients.
@@ -122,6 +139,23 @@ public abstract class MultiblockControllerMachine : MetaMachine
 		foreach (var trait in Traits.AllTraits)
 			if (trait is MultiblockMachineTrait mmt) mmt.OnStructureFormed();
 
+		// Footprint = the tiles the watcher checks against. Cache anchors are the 2x2
+		// top-left; expand to all four cells so a break at any sub-cell matches. (server-only)
+		if (IsServer)
+		{
+			var cells = _footprintCells ??= new HashSet<(int x, int y)>();
+			cells.Clear();
+			foreach (var (cx, cy) in GetMultiblockState().GetCache())
+			{
+				cells.Add((cx, cy));
+				cells.Add((cx + 1, cy));
+				cells.Add((cx, cy + 1));
+				cells.Add((cx + 1, cy + 1));
+			}
+			_formedControllers.Add(this);
+			_structureNeighborDirty = false;
+		}
+
 		// Clients don't run AsyncCheckPattern - broadcast the edge.
 		if (IsServer && !wasFormed)
 			MultiblockFormedPacket.SendBroadcast(Position.X, Position.Y, true, IsFlipped);
@@ -132,6 +166,7 @@ public abstract class MultiblockControllerMachine : MetaMachine
 	public override void OnKill()
 	{
 		if (IsServer && IsFormed) OnStructureInvalid();
+		if (IsServer) _formedControllers.Remove(this);
 		base.OnKill();
 	}
 
@@ -140,6 +175,13 @@ public abstract class MultiblockControllerMachine : MetaMachine
 		bool wasFormed = IsFormed;
 		IsFormed = false;
 		_parallelHatch = null;
+
+		if (IsServer)
+		{
+			_formedControllers.Remove(this);
+			_footprintCells?.Clear();
+			_structureNeighborDirty = false;
+		}
 
 		foreach (var part in _parts)
 			part.RemovedFromController(this);
@@ -356,16 +398,25 @@ public abstract class MultiblockControllerMachine : MetaMachine
 		return false;
 	}
 
-	// No Forge neighborChanged equivalent: unformed re-check every 4 ticks,
-	// formed every 20 (~1s) to catch player-broken casings.
+	// Unformed multis poll every 4 ticks (offset%4 spreads load - verbatim upstream).
+	// Formed + healthy multis do NOT poll: upstream drops them from the async-check
+	// queue and re-validates on block-change events (our MultiblockNeighborWatcher,
+	// which sets _structureNeighborDirty).
 	public void AsyncCheckPattern(long periodID)
 	{
 		if (_offset < 0)
 			_offset = (int)(((Position.X * 13L + Position.Y * 7L) & 0x3FF) % 4);
 
 		bool unformed = GetMultiblockState().HasError() || !IsFormed;
-		int cadence = unformed ? 4 : 20;
-		if ((_offset + periodID) % cadence != 0) return;
+		if (unformed)
+		{
+			if ((_offset + periodID) % 4 != 0) return;
+		}
+		else
+		{
+			if (!_structureNeighborDirty) return;
+		}
+		_structureNeighborDirty = false;
 
 		bool ok = CheckPatternWithTryLock();
 		// Clear stale "wrong block at (X,Y)" after a fix.

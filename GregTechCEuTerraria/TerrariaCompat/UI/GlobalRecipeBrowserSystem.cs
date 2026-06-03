@@ -23,7 +23,7 @@ public sealed class GlobalRecipeBrowserSystem : ModSystem
 	private GlobalRecipeBrowserState? _state;
 
 	private const string LayerName = "GregTechCEuTerraria: GlobalRecipeBrowser";
-	private const int LayerPriority = 10;
+	private const int LayerPriority = 30;
 
 	public override void Load()
 	{
@@ -51,6 +51,7 @@ public sealed class GlobalRecipeBrowserSystem : ModSystem
 		if (!Main.dedServ)
 		{
 			RecipeSearch.WarmCache();
+			_state?.Warm();
 			Loot.LootRegistry.Warm();
 		}
 	}

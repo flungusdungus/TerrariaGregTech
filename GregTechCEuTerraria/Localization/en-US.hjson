@@ -39036,6 +39036,56 @@ Mods: {
 				DisplayName: MAX Dual Output Hatch
 				Tooltip: ""
 			}
+
+			opv_input_hatch_4x: {
+				DisplayName: OpV Quadruple Input Hatch
+				Tooltip: ""
+			}
+
+			opv_input_hatch_9x: {
+				DisplayName: OpV Nonuple Input Hatch
+				Tooltip: ""
+			}
+
+			opv_output_hatch_4x: {
+				DisplayName: OpV Quadruple Output Hatch
+				Tooltip: ""
+			}
+
+			opv_output_hatch_9x: {
+				DisplayName: OpV Nonuple Output Hatch
+				Tooltip: ""
+			}
+
+			opv_energy_input_hatch_4a: {
+				DisplayName: OpV 4A Energy Hatch
+				Tooltip: ""
+			}
+
+			opv_energy_output_hatch_4a: {
+				DisplayName: OpV 4A Dynamo Hatch
+				Tooltip: ""
+			}
+
+			opv_energy_input_hatch_16a: {
+				DisplayName: OpV 16A Energy Hatch
+				Tooltip: ""
+			}
+
+			opv_energy_output_hatch_16a: {
+				DisplayName: OpV 16A Dynamo Hatch
+				Tooltip: ""
+			}
+
+			opv_substation_input_hatch_64a: {
+				DisplayName: OpV 64A Substation Energy Hatch
+				Tooltip: ""
+			}
+
+			opv_substation_output_hatch_64a: {
+				DisplayName: OpV 64A Substation Dynamo Hatch
+				Tooltip: ""
+			}
 		}
 
 		Tiles: {
@@ -40986,6 +41036,16 @@ Mods: {
 			uxv_dual_output_hatch.MapEntry: UXV Dual Output Hatch
 			opv_dual_output_hatch.MapEntry: OpV Dual Output Hatch
 			max_dual_output_hatch.MapEntry: MAX Dual Output Hatch
+			opv_input_hatch_4x.MapEntry: OpV Quadruple Input Hatch
+			opv_input_hatch_9x.MapEntry: OpV Nonuple Input Hatch
+			opv_output_hatch_4x.MapEntry: OpV Quadruple Output Hatch
+			opv_output_hatch_9x.MapEntry: OpV Nonuple Output Hatch
+			opv_energy_input_hatch_4a.MapEntry: OpV 4A Energy Hatch
+			opv_energy_output_hatch_4a.MapEntry: OpV 4A Dynamo Hatch
+			opv_energy_input_hatch_16a.MapEntry: OpV 16A Energy Hatch
+			opv_energy_output_hatch_16a.MapEntry: OpV 16A Dynamo Hatch
+			opv_substation_input_hatch_64a.MapEntry: OpV 64A Substation Energy Hatch
+			opv_substation_output_hatch_64a.MapEntry: OpV 64A Substation Dynamo Hatch
 		}
 
 		RecipeStatus: {

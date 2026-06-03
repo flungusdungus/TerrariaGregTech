@@ -120,14 +120,23 @@ public static class ModalEscape
 		}
 	}
 
-	// Edge-detect: true on the frame Esc was just pressed.
+	// Set by ConsumeEscape so a single Esc press is handled by exactly ONE modal -
+	// after the topmost modal consumes it, EscJustPressed reads false for every other
+	// modal's PostUpdateInput later in the same frame (regardless of ModSystem order).
+	private static long _escConsumedTick = -1;
+
+	// Edge-detect: true on the frame Esc was just pressed, AND not already consumed
+	// this frame by another modal.
 	public static bool EscJustPressed =>
-		Main.keyState.IsKeyDown(Keys.Escape) && !Main.oldKeyState.IsKeyDown(Keys.Escape);
+		_escConsumedTick != Main.GameUpdateCount
+		&& Main.keyState.IsKeyDown(Keys.Escape) && !Main.oldKeyState.IsKeyDown(Keys.Escape);
 
 	// Clear every Esc-bound trigger so vanilla / mod actions don't fire this
-	// frame. Call before TriggersSet.CopyInto (i.e. from PostUpdateInput).
+	// frame, and latch so no other modal also handles this Esc. Call before
+	// TriggersSet.CopyInto (i.e. from PostUpdateInput).
 	public static void ConsumeEscape()
 	{
+		_escConsumedTick = Main.GameUpdateCount;
 		foreach (var mode in KeyboardModes)
 			ConsumePhysicalKeys(EscapeKey, mode);
 	}

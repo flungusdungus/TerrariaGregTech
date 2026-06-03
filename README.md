@@ -6,7 +6,9 @@
 >
 > ....Oh, btw, this mod has an electric Fisher which simulates fishing, so you can finally avoid interacting with terraria fishing completely~
 
-A port of [GregTech Modern (GTCEu)](https://github.com/GregTechCEu/GregTech-Modern) to Terraria 1.4.4
+A port of [GregTech Modern (GTCEu)](https://github.com/GregTechCEu/GregTech-Modern) to Terraria 1.4.4. 
+
+> Note: This is an unofficial port. Do not request support in original mod
 
 Discord: https://discord.gg/sqs4G7u6eX
 
@@ -54,6 +56,7 @@ Discord: https://discord.gg/sqs4G7u6eX
   - GlassKiln Arc Furnace LV
   - BoneWelder Forging Press LV
   - HoneyDispenser into Canner MV
+  - DemonAltar into Circuit Assembler LV
 
 ### Boss drops
 
@@ -140,7 +143,7 @@ UV Tritanium Yttrium-Barium-Cuprate Americium
 
 ## AI Usage
 
-Some people asked, yes, Claude was used to speed up the porting process, of course. Theres no fun in manually rewriting stuff line by line, and the existing AST-based java->c# porters are too dumb for such a complex thing
+Some people asked, yes, Claude was used to speed up the porting process, of course. Theres no fun in manually rewriting stuff line by line, and the existing AST-based java->c# porters are too dumb for such a complex thing. So be aware there still will be stupid unexpected game breaking bugs, play at your own caution
 
 ## License
 

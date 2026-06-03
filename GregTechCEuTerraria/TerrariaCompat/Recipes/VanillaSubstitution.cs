@@ -16,12 +16,6 @@ namespace GregTechCEuTerraria.TerrariaCompat.Recipes;
 //                   (separate from Groups, which serve the workbench bridge).
 //   4. Groups       tag -> RecipeGroup id; for VanillaCraftingBridge.
 //
-// Each entry's per-row inline comment is the SSOT for WHY that mapping was
-// chosen - read them at the dictionary below, not a duplicate header table.
-//
-// Conventions: prefer SuffixRules over enumerating species; document the
-// reason inline for non-obvious mappings; tag-form refs need TagItems
-// (machine-slot match) AND Groups (workbench bridge) entries.
 public static class VanillaItemMap
 {
 	// ---- ExactItems: one-off, non-pattern singletons --------------------------
@@ -33,61 +27,39 @@ public static class VanillaItemMap
 		{ "minecraft:granite",          ItemID.Granite },
 		{ "minecraft:andesite",         ItemID.SlushBlock },
 		{ "minecraft:diorite",          ItemID.EbonstoneBlock },
-		{ "minecraft:basalt",           ItemID.PearlstoneBlock },     // dark volcanic -> Pearlstone (rock_breaker infinite source)
-		{ "minecraft:deepslate",        ItemID.HellstoneBrick },      // deep-layer stone -> Hellstone Brick
-		{ "minecraft:blackstone",       ItemID.AncientHellstoneBrick },// nether blackstone -> Ancient Hellstone Brick
-		// GT decorative stone BLOCKS that we replace with Terraria's. The matching
-		// `forge:marble` / `forge:granite_red` MultiTagItems entries handle the
-		// tag-form refs; these handle direct `gtceu:marble` / `gtceu:red_granite`
-		// item refs (recipe outputs, plus any other recipe that names them
-		// directly). The GT blocks themselves still exist as decorative casings
-		// (CasingRegistry) - this only swaps their recipe-graph identity.
-		{ "gtceu:marble",               ItemID.Marble },               // raw Marble Block (not "Smooth Marble Block" = ItemID.MarbleBlock)
+		{ "minecraft:basalt",           ItemID.PearlstoneBlock },
+		{ "minecraft:deepslate",        ItemID.HellstoneBrick },
+		{ "minecraft:blackstone",       ItemID.AncientHellstoneBrick },
+		{ "gtceu:marble",               ItemID.Marble },
 		{ "gtceu:red_granite",          ItemID.CrimstoneBlock },
+		{ "gtceu:rubber_sapling",       ItemID.Acorn },
+		{ "gtceu:nightvision_goggles",  ItemID.NightVisionHelmet },
 		{ "minecraft:cobblestone_slab", ItemID.StoneSlab },
 		{ "minecraft:dirt",             ItemID.DirtBlock },
 		{ "minecraft:gravel",           ItemID.SiltBlock },
 		{ "minecraft:sand",             ItemID.SandBlock },
 		{ "minecraft:sandstone",        ItemID.SandstoneBrick },
 		{ "minecraft:obsidian",         ItemID.Obsidian },
-		{ "minecraft:soul_sand",        ItemID.AshBlock },    // dark nether soil -> Terraria Ash Block
-		{ "minecraft:iron_bars",        ItemID.IronFence },   // decorative metal bars -> Terraria Iron Fence
+		{ "minecraft:soul_sand",        ItemID.AshBlock },
+		{ "minecraft:iron_bars",        ItemID.IronFence },
 
-		// Explosives - MC TNT -> Terraria Bomb; GregTech's dynamite -> Terraria
-		// Dynamite. (GT industrial_tnt is dropped at extraction, not ported.)
 		{ "minecraft:tnt",              ItemID.Bomb },
 		{ "gtceu:dynamite",             ItemID.Dynamite },
 
-		// Snow - the full snow_block / snowball map onto Terraria's. (The thin
-		// `minecraft:snow` layer is dropped at extraction, not ported.)
 		{ "minecraft:snow_block",       ItemID.SnowBlock },
 		{ "minecraft:snowball",         ItemID.Snowball },
 
-		// Ingots / ores - MC "ingot" <-> Terraria "bar".
 		{ "minecraft:iron_ingot",       ItemID.IronBar },
 		{ "minecraft:gold_ingot",       ItemID.GoldBar },
 		{ "minecraft:copper_ingot",     ItemID.CopperBar },
-		// `minecraft:raw_X` (raw iron / gold / copper) deliberately NOT
-		// substituted to `ItemID.*Ore`. The recipe pipeline resolves them
-		// through MaterialItemRegistry's `Mod.TryFind("raw_X")` fallback to
-		// the existing `gtceu:raw_X` material items, so the macerator's
-		// `forge:raw_materials/X` tag -> 2x crushed_X chain consumes the GT
-		// raw chunks, not Terraria ore tiles directly. The Terraria-side
-		// 1 ore -> 16 raw_ore conversion lives at
-		// `VanillaCraftingBridgeSystem.AddVanillaOreToRawOreRecipes` (vanilla
-		// workbench recipe). Without this gap, both the conversion AND the
-		// macerator step accepted Terraria ore tiles, collapsing the
-		// intended `1 ore -> 16 raw -> 32 crushed` chain to `1 ore -> 2 crushed`.
 		{ "minecraft:diamond",          ItemID.Diamond },
 		{ "minecraft:emerald",          ItemID.Emerald },
 
 		// Common drops
-		// (minecraft:coal -> gtceu:coal_gem via MaterialSubs - ItemID.Coal is the
-		// Christmas-stocking gag item with maxStack=1, not a fuel.)
 		{ "minecraft:torch",            ItemID.Torch },
 		{ "minecraft:glass_pane",       ItemID.GlassWall },
 		{ "minecraft:bone",             ItemID.Bone },
-		{ "minecraft:anvil",            ItemID.IronAnvil },   // crafting-station anvil -> Terraria Iron Anvil
+		{ "minecraft:anvil",            ItemID.IronAnvil },
 		{ "minecraft:book",             ItemID.Book },
 		{ "minecraft:bookshelf",        ItemID.Bookcase },
 		{ "minecraft:lantern",          ItemID.ChainLantern },
@@ -110,30 +82,18 @@ public static class VanillaItemMap
 		{ "minecraft:chest",            ItemID.Chest },
 		{ "minecraft:loom",             ItemID.Loom },
 		{ "minecraft:crafting_table",   ItemID.WorkBench },
-		{ "minecraft:white_wool",       ItemID.Cloud },       // white wool -> Cloud (dyed wool dropped at extraction)
+		{ "minecraft:white_wool",       ItemID.Cloud },
 		{ "minecraft:dropper",          ItemID.DartTrap },
 		{ "minecraft:item_frame",       ItemID.ItemFrame },
-		{ "gtceu:nano_saber",           ItemID.Muramasa },     // GT energy sword -> Terraria Muramasa
-		{ "minecraft:painting",         ItemID.PlacePainting },  // MC painting -> Terraria's "r/Terraria" community painting
-		{ "minecraft:redstone_torch",   ItemID.Wire },           // redstone signal source -> Terraria Wire
+		{ "gtceu:nano_saber",           ItemID.Muramasa },
+		{ "minecraft:painting",         ItemID.PlacePainting },
+		{ "minecraft:redstone_torch",   ItemID.Wire },
 		{ "minecraft:lever",            ItemID.Lever },
-		{ "minecraft:piston",           ItemID.Grate },             // piston -> Grate (mechanical-looking grille; closer aesthetic match than Active Stone Block)
+		{ "minecraft:piston",           ItemID.Grate },
 		{ "minecraft:flower_pot",       ItemID.ClayPot },
 		{ "minecraft:furnace",          ItemID.Furnace },
 		{ "minecraft:blast_furnace",    ItemID.Hellforge },
 		{ "minecraft:chain",            ItemID.Chain },
-		// `gtceu:iron_ore / copper_ore / gold_ore` (the GregTech stone-host ore
-		// BLOCK items) are deliberately NOT substituted to `ItemID.*Ore`. They
-		// resolve via the RawOre prefix's `%s_ore` IdPattern alias
-		// (MaterialPrefix.cs:41) -> `gtceu:raw_X`, matching the
-		// `forge:raw_materials/X` tag path. Without this, the
-		// `macerate_X_ore_to_crushed_ore` family (the stone-host variant, sibling
-		// of `macerate_raw_X_ore_to_crushed_ore`) substituted to ItemID.*Ore and
-		// short-circuited the `1 vanilla ore -> 16 raw -> 32 crushed` chain to
-		// `1 vanilla ore -> 2 crushed`. After this change both recipes consume
-		// `raw_X`; the stone-host variant additionally drops `stone_dust` as a
-		// byproduct, which is the legitimate semantic difference. Stays in
-		// `_byUpstreamId` via the IdPattern alias - does NOT need an entry here.
 
 		// GregTech jetpacks -> Terraria flight items (ascending tiers).
 		{ "gtceu:liquid_fuel_jetpack",     ItemID.CreativeWings },  // Fledgling Wings
@@ -145,11 +105,11 @@ public static class VanillaItemMap
 		// analogue - its recipes are dropped at extraction.)
 		{ "minecraft:apple",                  ItemID.Apple },
 		{ "minecraft:cactus",                 ItemID.Cactus },
-		{ "minecraft:sugar_cane",             ItemID.BambooBlock },        // tall water-edge plant -> Terraria's Bamboo Block
+		{ "minecraft:sugar_cane",             ItemID.BambooBlock },
 		{ "minecraft:red_mushroom",           ItemID.Mushroom },
-		{ "minecraft:glow_berries",           ItemID.GlowingMushroom },    // glowing cave plant -> Glowing Mushroom
+		{ "minecraft:glow_berries",           ItemID.GlowingMushroom },
 		{ "minecraft:enchanted_golden_apple", ItemID.CandyApple },
-		{ "minecraft:beef",                   ItemID.Worm },        // raw meat -> Terraria bait (Worm)
+		{ "minecraft:beef",                   ItemID.Worm },
 
 		// Fishing - rod + the four fish onto their nearest Terraria catches.
 		{ "minecraft:fishing_rod",      ItemID.GoldenFishingRod },
@@ -279,10 +239,6 @@ public static class VanillaItemMap
 	// Order matters only when suffixes overlap (longest-suffix-match wins).
 	private static readonly (string Suffix, int Item)[] SuffixRules = new (string, int)[]
 	{
-		// Wood - every "this is bark/lumber" upstream item -> ItemID.Wood.
-		// MC distinguishes oak_log (round) from oak_wood (all-bark cube) from
-		// stripped_oak_wood (all-bark, no bark); Terraria has none of that
-		// distinction, so they all collapse to Wood.
 		("_log",      ItemID.Wood),         // oak_log, stripped_birch_log, ...
 		("_wood",     ItemID.Wood),         // oak_wood, stripped_birch_wood, ...
 		("_stem",     ItemID.Wood),         // crimson_stem, warped_stem
@@ -299,15 +255,15 @@ public static class VanillaItemMap
 	{
 		{ "minecraft:logs",                       ItemID.Wood },
 		{ "minecraft:logs_that_burn",             ItemID.Wood },
-		{ "minecraft:oak_logs",                   ItemID.Wood },        // vanilla MC per-species log tag - not in the gtceu datagen dump
+		{ "minecraft:oak_logs",                   ItemID.Wood },
 		{ "forge:oak_logs",                       ItemID.Wood },
 		{ "minecraft:planks",                     ItemID.WoodPlatform },
 		{ "minecraft:saplings",                   ItemID.Acorn },
-		{ "minecraft:stone_crafting_materials",   ItemID.StoneBlock },  // cobblestone / blackstone / cobbled_deepslate / ... all collapse to StoneBlock
+		{ "minecraft:stone_crafting_materials",   ItemID.StoneBlock },
 		{ "forge:wood",                           ItemID.Wood },
 		{ "forge:saplings",                       ItemID.Acorn },
-		{ "forge:cobblestone",                    ItemID.StoneBlock },  // forge alias used by some recipes
-		{ "forge:glass",                          ItemID.Glass },       // Forge's all-glass-blocks tag
+		{ "forge:cobblestone",                    ItemID.StoneBlock },
+		{ "forge:glass",                          ItemID.Glass },
 
 		// Coral - MC's coral plants/fans collapse to Terraria's generic Coral
 		// item; coral *blocks* collapse to the Coralstone Block. The two parent
@@ -324,15 +280,15 @@ public static class VanillaItemMap
 		{ "forge:coral_blocks/alive",             ItemID.CoralstoneBlock },
 		{ "forge:coral_blocks/dead",              ItemID.CoralstoneBlock },
 
-		{ "minecraft:coals",                      ItemID.Coal },        // vanilla MC tag (coal + charcoal) - not in the gtceu datagen dump
-		{ "forge:chests/wooden",                  ItemID.Chest },       // any wooden chest -> Terraria's generic Chest
-		{ "forge:pistons",                        ItemID.Grate },       // piston / sticky_piston -> Grate (mechanical-looking grille; closer aesthetic match)
-		{ "minecraft:wool",                       ItemID.Cloud },       // any-colour wool -> Cloud
-		{ "forge:glass_panes",                    ItemID.GlassWall },   // plain glass panes -> Terraria Glass Wall
+		{ "minecraft:coals",                      ItemID.Coal },
+		{ "forge:chests/wooden",                  ItemID.Chest },
+		{ "forge:pistons",                        ItemID.Grate },
+		{ "minecraft:wool",                       ItemID.Cloud },
+		{ "forge:glass_panes",                    ItemID.GlassWall },
 
-		{ "forge:sand",                           ItemID.SandBlock },   // Forge's all-sand tag
-		{ "minecraft:sand",                       ItemID.SandBlock },   // vanilla MC sand tag (sand + red_sand) - not in the gtceu datagen dump
-		{ "minecraft:smelts_to_glass",            ItemID.SandBlock },   // vanilla MC tag (sand / red_sand - anything that smelts to glass)
+		{ "forge:sand",                           ItemID.SandBlock },
+		{ "minecraft:sand",                       ItemID.SandBlock },
+		{ "minecraft:smelts_to_glass",            ItemID.SandBlock },
 	};
 
 	// ---- MultiTagItems: tag -> multiple representative Terraria items --------
@@ -351,13 +307,7 @@ public static class VanillaItemMap
 			ItemID.Tuna, ItemID.RedSnapper, ItemID.NeonTetra,
 			ItemID.BalloonPufferfish,
 		}},
-		// GT marble -> Terraria Marble Block ONLY. NOTE: `ItemID.Marble` (3081)
-		// is the raw cave-biome Marble Block we want; `ItemID.MarbleBlock`
-		// (3066) is "Smooth Marble Block" (crafted polished variant) - Terraria's
-		// naming is inverted. Same trap for Granite (`Granite` raw vs
-		// `GraniteBlock` smooth).
 		{ "forge:marble",       new int[] { ItemID.Marble } },
-		// GT red granite -> Terraria Crimstone Block ONLY (same reason).
 		{ "forge:granite_red",  new int[] { ItemID.CrimstoneBlock } },
 	};
 

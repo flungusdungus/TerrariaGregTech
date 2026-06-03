@@ -23,6 +23,8 @@ public sealed class UIDynamicLabel : UIElement
 		Height = StyleDimension.FromPixels(16);
 	}
 
+	public override bool ContainsPoint(Vector2 point) => false;
+
 	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
 		var b = GetDimensions();

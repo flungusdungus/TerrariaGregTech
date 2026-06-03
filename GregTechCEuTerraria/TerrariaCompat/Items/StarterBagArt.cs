@@ -19,7 +19,10 @@ internal static class StarterBagArt
 {
 	private static readonly HashSet<int> _done = new();
 
-	public static void InstallFor(int bagItemType, string overlayUpstreamId)
+	public static void InstallFor(int bagItemType, string overlayUpstreamId) =>
+		InstallFor(bagItemType, IngredientResolverImpl.Instance.ResolveItemType(overlayUpstreamId));
+
+	public static void InstallFor(int bagItemType, int overlayItemType)
 	{
 		if (Main.dedServ) return;
 		if (!_done.Add(bagItemType)) return;
@@ -27,7 +30,7 @@ internal static class StarterBagArt
 		var basePixels = LoadBagBase(out int bagW, out int bagH);
 		if (basePixels is null) return;
 
-		var overlay = LoadOverlay(overlayUpstreamId, out int ovW, out int ovH);
+		var overlay = LoadOverlay(overlayItemType, out int ovW, out int ovH);
 		if (overlay is null) { InstallTexture(bagItemType, basePixels, bagW, bagH); return; }
 
 		int target = Math.Max(8, (int)(bagW * 0.6f));
@@ -50,10 +53,9 @@ internal static class StarterBagArt
 		return px;
 	}
 
-	private static Color[]? LoadOverlay(string upstreamId, out int w, out int h)
+	private static Color[]? LoadOverlay(int type, out int w, out int h)
 	{
 		w = h = 0;
-		int type = IngredientResolverImpl.Instance.ResolveItemType(upstreamId);
 		if (type <= 0) return null;
 
 		// Force the source's runtime composite (else we'd grab the autoload

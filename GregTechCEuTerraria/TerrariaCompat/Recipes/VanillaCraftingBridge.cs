@@ -45,6 +45,18 @@ public static class VanillaCraftingBridge
 		{ "campfire_cooking",       TileID.Campfire },
 	};
 
+	// DEVIATION: every GT crafting-TABLE recipe (shaped / shapeless / strict /
+	// energy-transfer / fluid-container) is hand-craftable in 2D - no tile required
+	// (walking to a workbench for every plate/screw/rod is friction without benefit;
+	// the inventory grid accepts arbitrary patterns). Smelting / blasting / cooking
+	// are NOT here, so they keep their StationToTile tile (a Furnace recipe needs a
+	// furnace, etc.). Original GT.Hand-only gate was gt.Data.GetBool("GT.Hand").
+	private static readonly HashSet<string> HandStations = new()
+	{
+		"crafting_shaped", "crafting_shapeless", "crafting_shaped_strict",
+		"crafting_shaped_energy_transfer", "crafting_shaped_fluid_container",
+	};
+
 	private static int _emptyCellType;       // empty cell returned on fluid-container craft
 	private static LocalizedText _fluidConditionText = null!;
 
@@ -65,17 +77,19 @@ public static class VanillaCraftingBridge
 		var seen = new HashSet<string>();
 		_deduped = 0;
 
-		// Two passes - hand form wins dedup so the no-tile variant lands first.
+		// Two passes - hand (no-tile) stations first so they win dedup over a tiled
+		// variant with the same result + ingredient multiset.
 		for (int pass = 0; pass < 2; pass++)
 		{
 			bool handPass = pass == 0;
 			foreach (var (station, tileId) in StationToTile)
 			{
+				bool isHand = HandStations.Contains(station);
+				if (isHand != handPass) continue;
 				foreach (var gt in RecipeRegistry.ForStation(station))
 				{
-					if (IsHandCraftable(gt) != handPass) continue;
 					totalConsidered++;
-					if (TryBuild(gt, tileId, unresolvedItems, unresolvedTags, seen))
+					if (TryBuild(gt, tileId, isHand, unresolvedItems, unresolvedTags, seen))
 						totalRegistered++;
 				}
 			}
@@ -91,15 +105,7 @@ public static class VanillaCraftingBridge
 
 	private static int _deduped;
 
-	// DEVIATION: every GT crafting_shaped/shapeless recipe is
-	// hand-craftable (no tile required). In 2D Terraria, walking to a workbench
-	// for every plate/screw/rod is friction without benefit; the inventory grid
-	// accepts arbitrary patterns. Smelting/blasting/cooking still go through
-	// StationToTile. Original GT.Hand-only gate was:
-	//   gt.Data != null && gt.Data.GetBool("GT.Hand")
-	private static bool IsHandCraftable(GTRecipe gt) => true;
-
-	private static bool TryBuild(GTRecipe gt, int tileId,
+	private static bool TryBuild(GTRecipe gt, int tileId, bool isHand,
 		Dictionary<string, int> missItems, Dictionary<string, int> missTags,
 		HashSet<string> seen)
 	{
@@ -172,8 +178,9 @@ public static class VanillaCraftingBridge
 			if (isGroup) recipe.AddRecipeGroup(itemOrGroupId, count);
 			else         recipe.AddIngredient(itemOrGroupId, count);
 		}
-		// Hand-craftable recipes get NO tile (craftable in inventory anywhere).
-		if (!IsHandCraftable(gt))
+		// Hand-craftable (crafting-table family) recipes get NO tile - craftable in
+		// the inventory grid anywhere. Smelting / blasting / cooking keep their tile.
+		if (!isHand)
 			recipe.AddTile(tileId);
 
 		// Crafting-tool catalysts required but never consumed (GregTech parity).

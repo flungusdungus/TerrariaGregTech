@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.UI;
 
 namespace GregTechCEuTerraria.TerrariaCompat.UI.Widgets;
@@ -26,6 +28,20 @@ public sealed class UIItemGrid : UIElement
 	// per-frame per-cell calls visibly stutter at scroll. Cache pays it once.
 	private static readonly Dictionary<int, Item> _itemCache = new();
 	private static readonly Item[] _drawSlot = { new() };
+
+	private static bool _warmedVanilla;
+
+	public static void WarmVanillaItemTextures()
+	{
+		if (_warmedVanilla || Main.dedServ) return;
+		_warmedVanilla = true;
+		for (int t = 1; t < ItemID.Count; t++)
+		{
+			var asset = TextureAssets.Item[t];
+			if (asset != null && (int)asset.State == 0)
+				Main.Assets.Request<Texture2D>(asset.Name, AssetRequestMode.AsyncLoad);
+		}
+	}
 
 	private readonly Func<IReadOnlyList<int>> _source;
 	private readonly string _emptyHint;

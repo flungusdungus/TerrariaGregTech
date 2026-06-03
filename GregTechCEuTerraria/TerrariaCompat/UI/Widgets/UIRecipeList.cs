@@ -18,6 +18,13 @@ public sealed class UIRecipeList : UIElement
 {
 	private readonly Func<IReadOnlyList<GTRecipe>> _sourceProvider;
 	private readonly string _emptyHint;
+
+	public Action<GTRecipe>? OnSelectRecipe;
+
+	// Swallow the left-press that's still held when selection mode begins
+	private bool _awaitRelease;
+	public void IgnoreHeldClick() => _awaitRelease = true;
+
 	private int _scrollOffsetPx;
 	// Edge-tracked mouse - one action per press, not per held frame.
 	private bool _leftDown;
@@ -31,6 +38,28 @@ public sealed class UIRecipeList : UIElement
 	private const int ScrollbarWidth = 18;
 	private const int Margin = 6;
 	private const int MinThumbHeight = 28;
+	private const int SelectGutter = 44; // left gutter for the "+" pick button in selection mode
+	private const int SelectBtnSize = 36;
+
+	private static void DrawPlusButton(SpriteBatch sb, Rectangle rect, bool hot)
+	{
+		var px = TextureAssets.MagicPixel.Value;
+		float t = (float)(0.5 + 0.5 * Math.Sin(Main.GameUpdateCount * 0.12));
+		var bg = Color.Lerp(new Color(36, 130, 60), new Color(96, 232, 122), t);
+		if (hot) bg = Color.Lerp(bg, Color.White, 0.25f);
+		sb.Draw(px, rect, bg);
+		var border = hot ? new Color(200, 255, 215) : new Color(28, 90, 45);
+		sb.Draw(px, new Rectangle(rect.X, rect.Y, rect.Width, 1), border);
+		sb.Draw(px, new Rectangle(rect.X, rect.Bottom - 1, rect.Width, 1), border);
+		sb.Draw(px, new Rectangle(rect.X, rect.Y, 1, rect.Height), border);
+		sb.Draw(px, new Rectangle(rect.Right - 1, rect.Y, 1, rect.Height), border);
+		var font = FontAssets.MouseText.Value;
+		const float scale = 1.9f;
+		var size = font.MeasureString("+") * scale;
+		Terraria.Utils.DrawBorderString(sb, "+",
+			new Vector2(rect.X + (rect.Width - size.X) / 2f, rect.Y + (rect.Height - size.Y) / 2f - 2),
+			Color.White, scale);
+	}
 
 	public UIRecipeList(Func<IReadOnlyList<GTRecipe>> sourceProvider, string emptyHint = "No recipes")
 	{
@@ -133,6 +162,8 @@ public sealed class UIRecipeList : UIElement
 		var outer = GetDimensions().ToRectangle();
 		var px = TextureAssets.MagicPixel.Value;
 
+		if (_awaitRelease && !Main.mouseLeft) _awaitRelease = false;
+
 		spriteBatch.Draw(px, outer, new Color(20, 22, 50) * 0.45f);
 
 		// Suppress vanilla mouse-wheel for the frame; arm the HoverItemTracker
@@ -157,6 +188,8 @@ public sealed class UIRecipeList : UIElement
 			Terraria.Utils.DrawBorderString(spriteBatch, _emptyHint,
 				new Vector2(content.X + 8, content.Y + 8),
 				Color.LightGray, 0.85f);
+			_leftDown  = Main.mouseLeft;
+			_rightDown = Main.mouseRight;
 			return;
 		}
 
@@ -219,10 +252,15 @@ public sealed class UIRecipeList : UIElement
 		}
 
 		int hoveredRow = -1;
+		bool picked = false; // a Select-Recipe click exits the row loop AND skips the hover/tooltip block below
+		int selGutter = OnSelectRecipe != null ? SelectGutter : 0;
 		for (int i = firstRow; i <= lastRow; i++)
 		{
 			int yTop = content.Y - _scrollOffsetPx + i * rowH;
 			var rowBounds = new Rectangle(content.X, yTop, content.Width, rowH);
+			var contentBounds = selGutter > 0
+				? new Rectangle(rowBounds.X + selGutter, yTop, rowBounds.Width - selGutter, rowH)
+				: rowBounds;
 
 			// Skip hover highlight while dragging (else rows flash as cursor crosses).
 			bool rowHovered = !draggingThisFrame && rowBounds.Contains(mouse) && content.Contains(mouse);
@@ -232,15 +270,34 @@ public sealed class UIRecipeList : UIElement
 				hoveredRow = i;
 			}
 
-			RecipeRowRenderer.Draw(spriteBatch, rowBounds, src[i], Color.White);
+			RecipeRowRenderer.Draw(spriteBatch, contentBounds, src[i], Color.White);
+
+			if (selGutter > 0)
+			{
+				var selBtn = new Rectangle(rowBounds.X + 4, yTop + (rowH - SelectBtnSize) / 2, SelectBtnSize, SelectBtnSize);
+				bool overSel = !draggingThisFrame && content.Contains(mouse) && selBtn.Contains(mouse);
+				DrawPlusButton(spriteBatch, selBtn, overSel);
+				if (overSel)
+				{
+					Main.LocalPlayer.mouseInterface = true;
+					Main.instance.MouseText("Select this recipe");
+					if (!_awaitRelease && Main.mouseLeft && !_leftDown && !_dragging)
+					{
+						OnSelectRecipe!(src[i]);
+						picked = true;
+						break;
+					}
+				}
+			}
 		}
 
-		if (hoveredRow >= 0)
+		if (hoveredRow >= 0 && !picked)
 		{
 			Main.LocalPlayer.mouseInterface = true;
-			var rowBounds = new Rectangle(
-				content.X, content.Y - _scrollOffsetPx + hoveredRow * rowH,
-				content.Width, rowH);
+			int hyTop = content.Y - _scrollOffsetPx + hoveredRow * rowH;
+			var rowBounds = selGutter > 0
+				? new Rectangle(content.X + selGutter, hyTop, content.Width - selGutter, rowH)
+				: new Rectangle(content.X, hyTop, content.Width, rowH);
 
 			// Quick-craft chip wins click-priority over any overlapping cell.
 			var craftRecipe = RecipeRowRenderer.FindAvailableVanillaCraft(src[hoveredRow]);
@@ -298,8 +355,6 @@ public sealed class UIRecipeList : UIElement
 						BrowserSlotInteraction.HandleFluid(click, fluid,
 							fluidAmt > 0 ? fluidAmt : (int?)null, inFavoritesPane: false);
 					else if (itemType > 0)
-						// AS DISPLAYED (research/NBT stamped) - cheats spawn the
-						// researched orb, not a blank one.
 						BrowserSlotInteraction.HandleItem(click,
 							RecipeRowRenderer.BuildDisplayItem(ing, itemType),
 							inFavoritesPane: false,

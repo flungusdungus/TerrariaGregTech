@@ -29,23 +29,28 @@ public sealed class UISlot : UIElement
 	private readonly SlotGroup _group;
 	private readonly int _slotIndex;
 	private readonly int _context;
-	// Mirror of upstream SlotWidget's canPutItems=false on output handlers.
 	private readonly bool _isOutput;
-	// Port of upstream BlockableSlotWidget.setIsBlocked - rotor holder uses
-	// this to keep a spinning rotor from being yanked mid-tick.
 	private readonly System.Func<bool>? _isBlocked;
-	// Upstream `setBackground(SLOT, EXTRA)` second layer - rotor holder's
-	// TURBINE_OVERLAY is the canonical user.
 	private readonly string? _emptyOverlayAsset;
 	private ReLogic.Content.Asset<Texture2D>? _emptyOverlayTex;
 
 	// Render-only reference; server mutates independently, UI reflects last sync.
 	private readonly Item[]? _slotsForRender;
 
+	// Optional hint shown when the slot is EMPTY and hovered (e.g. "Put blank ME
+	// patterns here"). A filled slot shows the normal vanilla item tooltip instead.
+	public string? EmptyHint { get; set; }
+
+	// Optional "this slot's contents are invalid" predicate (e.g. a Pattern Provider
+	// pattern whose crafting station isn't beside it). When true on a non-empty slot we
+	// paint AE2's red invalid overlay. Render-only; never gates clicks.
+	private readonly System.Func<bool>? _invalid;
+
 	public UISlot(MetaMachine entity, SlotGroup group, int slotIndex,
 		int context = ItemSlot.Context.ChestItem,
 		System.Func<bool>? isBlocked = null,
-		string? emptyOverlayAsset = null)
+		string? emptyOverlayAsset = null,
+		System.Func<bool>? invalid = null)
 	{
 		_entity = entity;
 		_group = group;
@@ -54,6 +59,7 @@ public sealed class UISlot : UIElement
 		_isOutput = group == SlotGroup.InventoryOutput;
 		_isBlocked = isBlocked;
 		_emptyOverlayAsset = emptyOverlayAsset;
+		_invalid = invalid;
 		_slotsForRender = entity.GetSlotGroup(group);
 		Width = StyleDimension.FromPixels(NativeUnscaledSize);
 		Height = StyleDimension.FromPixels(NativeUnscaledSize);
@@ -77,14 +83,27 @@ public sealed class UISlot : UIElement
 		Main.inventoryScale = bounds.Width / VanillaNativeSlotPixels;
 		try
 		{
-			if (IsMouseHovering)
+			// Skip hover/tooltip while a higher modal (recipe browser, craft windows)
+			// covers the machine UI - else the tooltip sticks (the panel still draws,
+			// but its _ui.Update is gated so IsMouseHovering stays frozen true).
+			if (IsMouseHovering && !MachineUISystem.IsOccludedByHigherModal)
 			{
 				// Clicks live in LeftMouseDown / RightMouseDown.
 				Main.LocalPlayer.mouseInterface = true;
-				ItemSlot.OverrideHover(_temp, _context, 0);
+				if (_temp[0].IsAir && EmptyHint is { } emptyHint)
+						Main.instance.MouseText(emptyHint);
+					else
+					{
+						ItemSlot.OverrideHover(_temp, _context, 0);
 				ItemSlot.MouseHover(_temp, _context, 0);
+					}
 			}
 			ItemSlot.Draw(spriteBatch, _temp, _context, 0, new Vector2(bounds.X, bounds.Y));
+
+				// AE2 red "invalid pattern" overlay (a non-empty slot the host can't use).
+				if (!_temp[0].IsAir && _invalid is { } invalid && invalid())
+					spriteBatch.Draw(Terraria.GameContent.TextureAssets.MagicPixel.Value, bounds,
+						new Color(200, 40, 40) * 0.45f);
 
 			// Empty-slot overlay (upstream `setBackground(SLOT, TURBINE_OVERLAY)`).
 			if (_emptyOverlayAsset is { } asset && _temp[0].IsAir)

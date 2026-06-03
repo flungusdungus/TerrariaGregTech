@@ -1,7 +1,7 @@
 author = caxapexac
 displayName = GregTechCEu (Terraria)
 homepage = https://github.com/caxapexac/TerrariaGregTech
-version = 0.0.1
+version = 0.0.2
 hideCode = false
 hideResources = false
 includeSource = true

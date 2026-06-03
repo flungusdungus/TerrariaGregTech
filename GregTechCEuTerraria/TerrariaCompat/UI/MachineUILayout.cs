@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Terraria.UI;
 
 namespace GregTechCEuTerraria.TerrariaCompat.UI;
 
@@ -22,4 +23,12 @@ public sealed class MachineUILayout
 	public float Scale { get; init; } = 2.0f;
 
 	public List<WidgetSpec> Widgets { get; init; } = new();
+
+	// Optional satellite panels rendered as their OWN UITerrariaPanel beside / above
+	// the machine panel
+	public SatellitePanelSpec? LeftPanel { get; init; }
+	public SatellitePanelSpec? TopPanel { get; init; }
+	public SatellitePanelSpec? BottomPanel { get; init; }
+
+	public sealed record SatellitePanelSpec(UIElement Element, int Width, int Height, string Title = "");
 }

@@ -142,9 +142,6 @@ public sealed class MachineUIState : UIState
 		}
 	}
 
-	// No global PointClamp wrapper - it blanket-clamps vanilla stack-count text
-	// (which expects LinearClamp) to look blocky. Pixel-art widgets that need
-	// PointClamp call it in their own DrawSelf.
 
 	private void BuildPanel()
 	{
@@ -195,40 +192,33 @@ public sealed class MachineUIState : UIState
 		Append(panel);
 		_machinePanel = panel;
 
-		// Universal IO & cover config panel - cover cluster plus (where supported)
-		// item / fluid output controls.
+		if (_layout.LeftPanel is not null)
+			AppendLeftSidePanel(_layout.LeftPanel);
+		if (_layout.TopPanel is not null)
+			AppendTopSidePanel(_layout.TopPanel);
+		if (_layout.BottomPanel is not null)
+			AppendBottomSidePanel(_layout.BottomPanel);
+
 		AppendIOConfigPanel(_entity, panel);
 
-		// Charger slot - every TieredEnergyMachine that opts in (HasChargerSlot).
 		if (_entity is TieredEnergyMachine em)
 			AppendChargerSlot(em, panel);
 
-		// Power toggle - left-outside the machine panel; suppressed for machines
-		// upstream doesn't let pause (steam boilers).
 		if (_entity.SupportsWorkingEnabledToggle)
 			AppendPowerTogglePanel(_entity, panel);
 
-		// Multi controllers route covers to the left stack; singleblocks keep
-		// them in the top IO panel alongside auto-output clusters.
 		if (_entity is Machine.Multiblock.MultiblockControllerMachine)
 			AppendCoverPanelLeft(_entity);
 
-		// Distinct-buses toggle for IDistinctPart input buses (verbatim port of
-		// upstream's `IDistinctPart.attachConfigurators`).
 		if (_entity is Api.Machine.Feature.Multiblock.IDistinctPart dp
 			&& _entity is Machine.Multiblock.Part.TieredIOPartMachine iop
 			&& iop.Io == Api.Capability.Recipe.IO.IN)
 			AppendDistinctTogglePanel(_entity, dp);
 
-		// Recipe-type mode selector for multi-mode multis (large_extractor,
-		// large_cutter, multi_smelter, ...). Verbatim shape of upstream's
-		// MachineModeFancyConfigurator side tab.
 		if (_entity is TerrariaCompat.Machine.Multiblock.WorkableMultiblockMachine wmm
 			&& wmm.GetRecipeTypes().Length > 1)
 			AppendModeSelectPanel(wmm, panel);
 
-		// Recipe browser - any IRecipeLogicMachine. Vanilla-station bridges
-		// aren't IRecipeLogicMachine so they get no browser.
 		if (_entity is IRecipeLogicMachine proc)
 			AppendRecipeBrowser(proc);
 	}
@@ -241,7 +231,9 @@ public sealed class MachineUIState : UIState
 		bool wantsItem  = entity.SupportsAutoOutputItems;
 		bool wantsFluid = entity.SupportsAutoOutputFluids;
 		// Multi controllers route covers to the left stack via AppendCoverPanelLeft.
-		bool wantsCover = entity is not Machine.Multiblock.MultiblockControllerMachine;
+		// Machines opting out of covers (ME Terminal / Storage) show no cluster.
+		bool wantsCover = entity.SupportsCovers
+			&& entity is not Machine.Multiblock.MultiblockControllerMachine;
 		// Parts carry a single IoDirection (not AutoOutputTrait) - separate cluster.
 		var part        = entity as Machine.Multiblock.Part.TieredIOPartMachine;
 		bool wantsPart  = part is not null;
@@ -421,8 +413,128 @@ public sealed class MachineUIState : UIState
 		togglePanel.Append(toggle);
 	}
 
-	// Cover satellite for multi controllers - left stack under the power toggle.
-	// Wraps the same UICoverPanel widget the singleblock IO panel uses.
+	private void AppendTopSidePanel(MachineUILayout.SatellitePanelSpec spec)
+	{
+		const int Padding = 6, LabelHeight = 11;
+		const float Gap = 6f;
+		bool hasTitle = !string.IsNullOrEmpty(spec.Title);
+		int innerTop = Padding + (hasTitle ? LabelHeight + 2 : 0);
+		int outerW = spec.Width + Padding * 2;
+		int outerH = innerTop + spec.Height + Padding;
+
+		var (machineLeft, machineTop, machineW) = MachinePanelScreenAnchor();
+		float left = machineLeft + (machineW - outerW) / 2f;
+		float top = System.Math.Max(8f, machineTop - outerH - Gap);
+
+		var sidePanel = new UITerrariaPanel
+		{
+			Width  = StyleDimension.FromPixels(outerW),
+			Height = StyleDimension.FromPixels(outerH),
+			HAlign = 0f,
+			VAlign = 0f,
+			Left = StyleDimension.FromPixels(left),
+			Top  = StyleDimension.FromPixels(top),
+		};
+
+		if (hasTitle)
+			sidePanel.Append(new UIText(spec.Title, 0.6f)
+			{
+				Left = StyleDimension.FromPixels(Padding),
+				Top  = StyleDimension.FromPixels(Padding),
+			});
+
+		var el = spec.Element;
+		el.Left   = StyleDimension.FromPixels(Padding);
+		el.Top    = StyleDimension.FromPixels(innerTop);
+		el.Width  = StyleDimension.FromPixels(spec.Width);
+		el.Height = StyleDimension.FromPixels(spec.Height);
+		sidePanel.Append(el);
+
+		Append(sidePanel);
+	}
+
+	private void AppendBottomSidePanel(MachineUILayout.SatellitePanelSpec spec)
+	{
+		const int Padding = 6, LabelHeight = 11;
+		const float Gap = 6f;
+		bool hasTitle = !string.IsNullOrEmpty(spec.Title);
+		int innerTop = Padding + (hasTitle ? LabelHeight + 2 : 0);
+		int outerW = spec.Width + Padding * 2;
+		int outerH = innerTop + spec.Height + Padding;
+
+		float s = _layout!.Scale;
+		var (machineLeft, machineTop, machineW) = MachinePanelScreenAnchor();
+		float machineH = _layout.Height * s;
+		float left = machineLeft + (machineW - outerW) / 2f;
+		float top = machineTop + machineH + Gap;
+
+		var sidePanel = new UITerrariaPanel
+		{
+			Width  = StyleDimension.FromPixels(outerW),
+			Height = StyleDimension.FromPixels(outerH),
+			HAlign = 0f,
+			VAlign = 0f,
+			Left = StyleDimension.FromPixels(left),
+			Top  = StyleDimension.FromPixels(top),
+		};
+
+		if (hasTitle)
+			sidePanel.Append(new UIText(spec.Title, 0.6f)
+			{
+				Left = StyleDimension.FromPixels(Padding),
+				Top  = StyleDimension.FromPixels(Padding),
+			});
+
+		var el = spec.Element;
+		el.Left   = StyleDimension.FromPixels(Padding);
+		el.Top    = StyleDimension.FromPixels(innerTop);
+		el.Width  = StyleDimension.FromPixels(spec.Width);
+		el.Height = StyleDimension.FromPixels(spec.Height);
+		sidePanel.Append(el);
+
+		Append(sidePanel);
+	}
+
+	private void AppendLeftSidePanel(MachineUILayout.SatellitePanelSpec spec)
+	{
+		const int Padding = 6, LabelHeight = 11;
+		const float Gap = 6f;
+		bool hasTitle = !string.IsNullOrEmpty(spec.Title);
+		int innerTop = Padding + (hasTitle ? LabelHeight + 2 : 0);
+		int outerW = spec.Width + Padding * 2;
+		int outerH = innerTop + spec.Height + Padding;
+
+		var (machineLeft, machineTop, _) = MachinePanelScreenAnchor();
+
+		var sidePanel = new UITerrariaPanel
+		{
+			Width  = StyleDimension.FromPixels(outerW),
+			Height = StyleDimension.FromPixels(outerH),
+			HAlign = 0f,
+			VAlign = 0f,
+			Left = StyleDimension.FromPixels(machineLeft - outerW - Gap),
+			Top  = StyleDimension.FromPixels(machineTop + _leftStackOffsetPx),
+		};
+
+		if (hasTitle)
+			sidePanel.Append(new UIText(spec.Title, 0.6f)
+			{
+				Left = StyleDimension.FromPixels(Padding),
+				Top  = StyleDimension.FromPixels(Padding),
+			});
+
+		var el = spec.Element;
+		el.Left   = StyleDimension.FromPixels(Padding);
+		el.Top    = StyleDimension.FromPixels(innerTop);
+		el.Width  = StyleDimension.FromPixels(spec.Width);
+		el.Height = StyleDimension.FromPixels(spec.Height);
+		sidePanel.Append(el);
+
+		Append(sidePanel);
+		_leftStackOffsetPx += outerH + Gap;
+	}
+
+
 	private void AppendCoverPanelLeft(MetaMachine entity)
 	{
 		float s = _layout!.Scale;
@@ -524,8 +636,6 @@ public sealed class MachineUIState : UIState
 		distinctPanel.Append(btn);
 	}
 
-	// Mode-cycle satellite - verbatim port of upstream's MachineModeFancyConfigurator.
-	// One row per recipe type, active row cyan, click -> ActiveRecipeTypeSetAction.
 	private void AppendModeSelectPanel(
 		TerrariaCompat.Machine.Multiblock.WorkableMultiblockMachine multi,
 		UITerrariaPanel machinePanel)
@@ -657,8 +767,6 @@ public sealed class MachineUIState : UIState
 		chargerPanel.Append(charger);
 	}
 
-	// Two right-side panels: all-recipes (top) + hover-filtered (bottom).
-	// Sized off the screen so they always pin to the right edge.
 	private void AppendRecipeBrowser(IRecipeLogicMachine proc)
 	{
 		// Per-station recipes filtered by ShowsInRecipeBrowser. Multi-mode multis
@@ -792,7 +900,6 @@ public sealed class MachineUIState : UIState
 
 	private static UIElement BuildBrowserPanel(float y, float w, float h, string title, UIRecipeList list)
 	{
-		// HAlign = 1f + negative Left = 8 px right-edge gutter.
 		var panel = new UITerrariaPanel
 		{
 			HAlign = 1f,
@@ -817,7 +924,6 @@ public sealed class MachineUIState : UIState
 		return panel;
 	}
 
-	// Variant with a search bar + right-aligned count label in the header.
 	private static UIElement BuildBrowserPanelWithSearch(
 		float y, float w, float h,
 		System.Func<string> countLabel,
@@ -835,7 +941,7 @@ public sealed class MachineUIState : UIState
 		};
 
 		const int SearchH    = 22;
-		const int CountW     = 110;   // room for "1234 / 12345  *  macerator"
+		const int CountW     = 110;
 		const int HeaderPad  = 6;
 
 		var search = new Widgets.UISearchBar(searchPlaceholder, onSearchChanged)
