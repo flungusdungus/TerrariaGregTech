@@ -33,7 +33,3 @@ Thumbs.db
 # Claude
 CLAUDE.md
 .claude/
-
-# Verbatim gregtech assets - produced by tools/scripts/sync-upstream-textures.py and sync-upstream-sounds.py
-GregTechCEuTerraria/Content/Textures/
-GregTechCEuTerraria/Content/Sounds/

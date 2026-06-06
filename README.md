@@ -153,8 +153,18 @@ Credits: GregTech Modern team
 Source: https://github.com/GregTechCEu/GregTech-Modern
 License: LGPL-3.0-or-later
 
+GregTech Modern textures credits:
+- Most textures are originally from [Gregtech: Refreshed](https://modrinth.com/resourcepack/gregtech-refreshed) by @ULSTICK. With some consistency edits and additions by @Ghostipedia.
+- Some textures are originally from the **[ZedTech GTCEu Resourcepack](https://github.com/brachy84/zedtech-ceu)**, with some changes made by the community.
+- New material item textures by @TTFTCUTS and @Rosethorns.
+- Wooden Forms, World Accelerators, and the Extreme Combustion Engine are from the **[GregTech: New Horizons Modpack](https://www.curseforge.com/minecraft/modpacks/gt-new-horizons)**.
+- Primitive Water Pump is from the **[IMPACT: GREGTECH EDITION Modpack](https://gt-impact.github.io/#/)**.
+- Ender Fluid Link Cover, Auto-Maintenance Hatch, Optical Fiber, and Data Bank Textures are from **[TecTech](https://github.com/Technus/TecTech)**.
+- Steam Grinder is from **[GregTech++](https://www.curseforge.com/minecraft/mc-mods/gregtech-gt-gtplusplus)**.
+- Certificate of Not Being a Noob Anymore is from **[Crops++](https://www.curseforge.com/minecraft/mc-mods/berries)**.
+
 Credits: GregTech Modern Community Pack (questbook content)
 Source: https://github.com/GregTechCEu/GregTech-Modern-Community-Pack
 License: LGPL-2.1
 
-Credits: EBF-chan sprite by Qiuqiu, used from their permission
+Credits: EBF-chan sprite by Qiuqiu, used with their permission
